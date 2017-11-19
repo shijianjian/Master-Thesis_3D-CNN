@@ -97,6 +97,7 @@
             for (var i = 0; i < n_voxels; i++) {
                 var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
                 mesh.material.color.setRGB(R[i], G[i], B[i]);
+                mesh.material.wireframe = true;
                 mesh.position.x = X[i];
                 mesh.position.y = Y[i];
                 mesh.position.z = Z[i];
