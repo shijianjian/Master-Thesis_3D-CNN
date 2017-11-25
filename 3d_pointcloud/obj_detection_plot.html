@@ -99,6 +99,8 @@
                 var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
                 mesh.material.color.setRGB(R[i], G[i], B[i]);
                 mesh.material.wireframe = true;
+                mesh.material.transparent = true;
+                mesh.material.opacity = 0.3;
                 mesh.position.x = X[i];
                 mesh.position.y = Y[i];
                 mesh.position.z = Z[i];
@@ -122,6 +124,7 @@
             var figure;
             loader = new THREE.PLYLoader();
             loader.load(filename + '.ply', (geometry) => {
+                console.log(geometry);
                 if (geometry.index) {
                     material = new THREE.MeshBasicMaterial({
                         side: THREE.DoubleSide,
