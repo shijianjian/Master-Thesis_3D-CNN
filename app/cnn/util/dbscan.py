@@ -1,4 +1,7 @@
-import numpy as np
+"""
+DBSCAN algorithm for clustering points within a point cloud.
+"""
+
 from sklearn.cluster import dbscan
 
 # https://github.com/NLeSC/PattyAnalytics/blob/master/patty/segmentation/dbscan.py

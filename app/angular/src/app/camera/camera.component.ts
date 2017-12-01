@@ -6,6 +6,7 @@ import { MeshBasicMaterialParameters, Color, Camera, Material } from 'three';
 import 'assets/js/three.min'
 import 'assets/js/PLYLoader';
 import 'assets/js/OrbitControls';
+import { CameraSettings } from '../model/camera-settings';
 declare const THREE;
 declare const PLYLoader;
 declare const OrbitControls;
@@ -17,31 +18,33 @@ declare const OrbitControls;
 })
 export class CameraComponent implements OnInit {
 
-  @Input() CAMERA_X_PLACEHOLDER;
-  @Input() CAMERA_Y_PLACEHOLDER;
-  @Input() CAMERA_Z_PLACEHOLDER;
-
-  @Input() LOOK_X_PLACEHOLDER;
-  @Input() LOOK_Y_PLACEHOLDER;
-  @Input() LOOK_Z_PLACEHOLDER;
-
-  @Input() POINTS_X_PLACEHOLDER;
-  @Input() POINTS_Y_PLACEHOLDER;
-  @Input() POINTS_Z_PLACEHOLDER;
-
-  @Input() R_PLACEHOLDER;
-  @Input() G_PLACEHOLDER;
-  @Input() B_PLACEHOLDER;
-
-  @Input() S_x_PLACEHOLDER;
-  @Input() S_y_PLACEHOLDER;
-  @Input() S_z_PLACEHOLDER;
-
-  @Input() N_VOXELS_PLACEHOLDER;
-  @Input() AXIS_SIZE_PLACEHOLDER;
-
-  @Input() FILENAME_PLACEHOLDER = 'assets/test/pyntcloud_plot';
-  @Input() POINT_SIZE_PLACEHOLDER = 0.005;
+  @Input() settings: CameraSettings = {
+    CAMERA_X: null,
+    CAMERA_Y: null,
+    CAMERA_Z: null,
+  
+    LOOK_X: null,
+    LOOK_Y: null,
+    LOOK_Z: null,
+  
+    POINTS_X: null,
+    POINTS_Y: null,
+    POINTS_Z: null,
+  
+    R: null,
+    G: null,
+    B: null,
+  
+    S_x: null,
+    S_y: null,
+    S_z: null,
+  
+    N_VOXELS: null,
+    AXIS_SIZE: null,
+  
+    FILENAME: 'assets/test/pyntcloud_plot',
+    POINT_SIZE: 0.005,
+  };
 
   constructor() {}
 
@@ -61,28 +64,28 @@ export class CameraComponent implements OnInit {
 
   private init() {
 
-    let camera_x = this.CAMERA_X_PLACEHOLDER;
-    let camera_y = this.CAMERA_Y_PLACEHOLDER;
-    let camera_z = this.CAMERA_Z_PLACEHOLDER;
+    let camera_x = this.settings.CAMERA_X;
+    let camera_y = this.settings.CAMERA_Y;
+    let camera_z = this.settings.CAMERA_Z;
 
-    let look_x = this.LOOK_X_PLACEHOLDER;
-    let look_y = this.LOOK_Y_PLACEHOLDER;
-    let look_z = this.LOOK_Z_PLACEHOLDER;
+    let look_x = this.settings.LOOK_X;
+    let look_y = this.settings.LOOK_Y;
+    let look_z = this.settings.LOOK_Z;
 
-    let X = new Float32Array(this.POINTS_X_PLACEHOLDER);
-    let Y = new Float32Array(this.POINTS_Y_PLACEHOLDER);
-    let Z = new Float32Array(this.POINTS_Z_PLACEHOLDER);
+    let X = new Float32Array(this.settings.POINTS_X);
+    let Y = new Float32Array(this.settings.POINTS_Y);
+    let Z = new Float32Array(this.settings.POINTS_Z);
 
-    let R = new Float32Array(this.R_PLACEHOLDER);
-    let G = new Float32Array(this.G_PLACEHOLDER);
-    let B = new Float32Array(this.B_PLACEHOLDER);
+    let R = new Float32Array(this.settings.R);
+    let G = new Float32Array(this.settings.G);
+    let B = new Float32Array(this.settings.B);
 
-    let S_x = this.S_x_PLACEHOLDER;
-    let S_y = this.S_y_PLACEHOLDER;
-    let S_z = this.S_z_PLACEHOLDER;
+    let S_x = this.settings.S_x;
+    let S_y = this.settings.S_y;
+    let S_z = this.settings.S_z;
 
-    let n_voxels = this.N_VOXELS_PLACEHOLDER;
-    let axis_size = this.AXIS_SIZE_PLACEHOLDER;
+    let n_voxels = this.settings.N_VOXELS;
+    let axis_size = this.settings.AXIS_SIZE;
 
     this.scene = new THREE.Scene();
 
@@ -116,7 +119,7 @@ export class CameraComponent implements OnInit {
     }
 
     // Point Cloud Renderer
-    let filename = this.FILENAME_PLACEHOLDER;
+    let filename = this.settings.FILENAME;
     let parameters =
     {
         size: 0.5,
@@ -149,7 +152,7 @@ export class CameraComponent implements OnInit {
         //   });
         } else {
             material = new THREE.PointsMaterial({
-                size: this.POINT_SIZE_PLACEHOLDER,
+                size: this.settings.POINT_SIZE,
                 vertexColors: THREE.VertexColors,
                 transparent: true,
                 opacity: 1,

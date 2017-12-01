@@ -1,3 +1,6 @@
+"""
+Point cloud data processing
+"""
 import numpy as np
 
 def find_ranges(point_cloud):
@@ -7,7 +10,7 @@ def find_ranges(point_cloud):
     x_max = x_min = point_cloud[0][0]
     y_max = y_min = point_cloud[0][1]
     z_max = z_min = point_cloud[0][2]
-    
+  
     for ind, coor in enumerate(point_cloud):
         if coor[0] > x_max:
             x_max = coor[0]
@@ -50,11 +53,10 @@ def norm_point(point_cloud):
     """
     Normalize point cloud coordinates to (0,1)
     """
-    
     ((x_min, x_max), (y_min, y_max), (z_min, z_max)) = find_ranges(point_cloud)
     
     biggest_value = np.max(np.asarray([x_max - x_min, y_max - y_min, z_max - z_min])) + 0.000000001
-    
+
     normalized_points = []
     for ind, coor in enumerate(point_cloud):
         row = np.empty(len(coor))
