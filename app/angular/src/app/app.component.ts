@@ -8,15 +8,16 @@ import { CameraSettings } from './model/camera-settings';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styles: [``]
 })
 export class AppComponent implements OnInit {
 
   uploader: FileUploader;
-  response:string;
+  response: string;
   filename: string;
 
   pointcloud: Array<Array<number>>;
+  segs: CameraSettings[] = [];
   cameraSettings: CameraSettings;
 
   constructor(
@@ -61,17 +62,28 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.$appService.getClusters().subscribe(
-      data => {
-        console.log(data);
-      }
-    )
+    
   }
 
   private prepareUploader(file) {
     this.uploader.onBuildItemForm = (item, form) => {
         form.append("file", file);
     }
+  }
+
+  segment() {
+    this.$appService.getClusters(this.pointcloud).subscribe(
+      data => {
+        for(let key in data.json()) {
+          this.$appService.getCameraSettings(data.json()[key], undefined, `${this.filename}_${key}`).subscribe(
+            csetting => {
+              this.segs.push(csetting);
+            }
+          )
+        }
+        this.segs = Array.from(Object.assign({}, this.segs));
+      }
+    )
   }
 
 }

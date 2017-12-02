@@ -56,14 +56,23 @@ def send_js(path):
     return send_from_directory(APP_STATIC_PATH, path)
 
 
-@APP.route('/cluster', methods=['GET', 'POST'])
+@APP.route('/cluster', methods=['POST'])
 @cross_origin()
 def cluster_point_cloud():
     """
     Output point cloud cluster according to the configuration.
     """
-    my_point_cloud = PyntCloud.from_file(os.path.join(os.getcwd(), 'ttt2.pts'), sep=" ", header=0, names=["x", "y", "z"])
-    normalized_cloud = norm_point(my_point_cloud.xyz)
+    if request.method == 'POST':
+        points = None
+        try:
+            # convert string to 2d numpy array
+            points = request.form['points']
+            import ast
+            points = ast.literal_eval(points)
+        except Exception as e:
+            print('Error on recieving points')
+            print(e)
+    normalized_cloud = norm_point(points)
     labels = dbscan_labels(normalized_cloud, 0.02, 10, algorithm='ball_tree')
     cluster = find_cluster_points(normalized_cloud, labels)
  

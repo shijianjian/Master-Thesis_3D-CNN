@@ -1,33 +1,45 @@
-import { Component, OnInit, OnChanges, Input } from '@angular/core';
-
-import * as dat from 'dat.gui/build/dat.gui.js'
+import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
 import { MeshBasicMaterialParameters, MeshBasicMaterial, PointsMaterial,
-    Color, Camera, Material, BoxGeometry } from 'three';
+    Color, Camera, Material, BoxGeometry, Points, Object3D, Mesh } from 'three';
 
-import 'assets/js/three.min'
-import 'assets/js/PLYLoader';
-import 'assets/js/OrbitControls';
 import { CameraSettings } from '../model/camera-settings';
+import { CameraGuiService } from '../camera-gui.service';
+import { GuiControllerTypes, GuiParameters } from '../model/GUI';
+
 declare const THREE;
 declare const PLYLoader;
 declare const OrbitControls;
 
 @Component({
   selector: 'app-camera',
-  templateUrl: './camera.component.html',
-  styleUrls: ['./camera.component.css']
+  templateUrl: './camera.component.html'
 })
-export class CameraComponent implements OnInit, OnChanges {
+export class CameraComponent implements OnChanges {
 
     @Input() settings: CameraSettings;
 
     renderer: THREE.WebGLRenderer;
-    gui = new dat.GUI();
-    private parameters = {
-        size: 0.01,
-        opacity: 1,
-        wireframe: true,
-    };
+    figure: Points | Mesh;
+
+    @ViewChild('canvas')
+    private canvasRef: ElementRef;
+    
+    constructor(private $cameraGui: CameraGuiService) {
+        this.$cameraGui.controllers.subscribe((param: GuiParameters) => {
+            if (this.figure && this.figure.type == "Points") {
+                (<PointsMaterial>this.figure.material).setValues({
+                    size: param.size,
+                    opacity: param.opacity
+                })
+            }
+            if (this.figure && this.figure.type == "Mesh") {
+                (<MeshBasicMaterial>this.figure.material).setValues({
+                    wireframe: param.wireframe,
+                    opacity: param.opacity
+                })
+            }
+        })
+    }
 
     ngOnInit() {
         this.renderer = this.setRender();
@@ -37,12 +49,16 @@ export class CameraComponent implements OnInit, OnChanges {
         this.onRender();
     }
 
-    onRender() {
+    private onRender() {
         if (typeof this.settings =='undefined')
             return;
         let cameraSettings = this.processProperties(this.settings);
         let camera = this.buildCamera(cameraSettings);
         this.init(cameraSettings, camera);
+    }
+
+    private get canvas(): HTMLCanvasElement {
+        return this.canvasRef.nativeElement;
     }
 
     private processProperties(settings: CameraSettings): CameraSettings {
@@ -70,7 +86,7 @@ export class CameraComponent implements OnInit, OnChanges {
 
     private buildCamera(cameraSettings: CameraSettings): THREE.PerspectiveCamera {
         let camera: THREE.PerspectiveCamera;
-        camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera = new THREE.PerspectiveCamera(90, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 10000);
         camera.position.x = cameraSettings.CAMERA_X;
         camera.position.y = cameraSettings.CAMERA_Y;
         camera.position.z = cameraSettings.CAMERA_Z;
@@ -140,11 +156,13 @@ export class CameraComponent implements OnInit, OnChanges {
         let loader = new THREE.PLYLoader();
         loader.load(filename, (geometry) => {
             if (geometry.index) {
-                let figure = this.loadMeshPLY(geometry, this.gui, this.parameters);
+                let figure = this.loadMeshPLY(geometry);
                 scene.add(figure);
+                this.figure = figure;
             } else {
-                let figure = this.loadPointsPLY(geometry, this.gui, this.parameters);
+                let figure = this.loadPointsPLY(geometry);
                 scene.add(figure);
+                this.figure = figure;
             }
             var light = new THREE.AmbientLight(0xFFFFFF, 1); // soft white light
             scene.add(light);
@@ -153,67 +171,39 @@ export class CameraComponent implements OnInit, OnChanges {
             controls.addEventListener('change', (event) => {
                 this.render(scene, camera)
             });
-            let container = document.getElementById('container');
-            container.appendChild(this.renderer.domElement);
             // fix async
             this.animate(scene, camera);
         });
 
     }
 
-    private loadPointsPLY(geometry, gui, parameters) {
+    private loadPointsPLY(geometry): Points {
         let material = new THREE.PointsMaterial({
-            size: parameters.size,
+            size: this.$cameraGui.getParameters.size,
             vertexColors: THREE.VertexColors,
             transparent: true,
             opacity: 1
         });
-        let figure = new THREE.Points(geometry, material);
-        // GUI panels
-        let figureSize = gui.add(parameters, 'size').min(0.001).max(1).step(0.001).name("Point Size").listen();
-        figureSize.onChange((value) => {
-            (figure.material as PointsMaterial).setValues({
-                size: value
-            });
-        });
-        let figureOpacity = gui.add(parameters, 'opacity').min(0.1).max(1).step(0.1).name('Opacity').listen();
-        figureOpacity.onChange((value) => {
-            (figure.material as Material).setValues({
-                opacity: value
-            })
-        });
+        let figure: Points = new THREE.Points(geometry, material);
         return figure;
     }
 
-    private loadMeshPLY(geometry, gui, parameters) {
-        let material = new THREE.MeshBasicMaterial({
+    private loadMeshPLY(geometry): Mesh {
+        let material: MeshBasicMaterial = new THREE.MeshBasicMaterial({
             side: THREE.DoubleSide,
             vertexColors: THREE.VertexColors,
             transparent: true,
             opacity: 1,
             wireframe: true,
         });
-        let figure = new THREE.Mesh(geometry, material);
-        let figureMaterial = gui.add(parameters, 'wireframe').name('Wireframe').listen();
-        // GUI panels
-        figureMaterial.onChange((value) => {
-            (figure.material as MeshBasicMaterial).setValues({
-                wireframe: value
-            });
-        });
-        let figureOpacity = gui.add(parameters, 'opacity').min(0.1).max(1).step(0.1).name('Opacity').listen();
-        figureOpacity.onChange((value) => {
-            (figure.material as Material).setValues({
-                opacity: value
-            })
-        });
+        let figure: Mesh = new THREE.Mesh(geometry, material);
         return figure;
     }
 
     private onWindowResize(camera) {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.aspect = this.canvas.clientWidth/this.canvas.clientHeight;
         camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     }
 
     private animate(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
@@ -223,11 +213,12 @@ export class CameraComponent implements OnInit, OnChanges {
 
     private setRender(): THREE.WebGLRenderer {
         let renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ 
+            canvas: this.canvas,
             antialias: false,
             preserveDrawingBuffer: true
         });
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
         return renderer;
     }
 

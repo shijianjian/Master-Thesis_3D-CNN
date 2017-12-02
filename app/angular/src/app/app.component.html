@@ -1,7 +1,17 @@
-<div>
-    <input type="file" ng2FileSelect [uploader]="uploader" />
-</div>
 
-<div>
-    <app-camera [settings]="cameraSettings"></app-camera>
+<div class="col-8">
+    <div class="row">
+        <input class="btn btn-primary" type="file" ng2FileSelect [uploader]="uploader" />
+    </div>
+    <div>
+        <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera>
+    </div>
+    <div class="row">
+        <input class="btn btn-primary" type="button" value="Seg" (click)="segment()"/>
+    </div>
+</div>
+<div class="col-4">
+    <div class="row" *ngFor="let seg of segs; let i = index;">
+        <app-camera class="app-container-inline" [settings]="seg"></app-camera>
+    </div>
 </div>

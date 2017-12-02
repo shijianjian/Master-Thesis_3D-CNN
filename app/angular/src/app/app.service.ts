@@ -12,9 +12,12 @@ export class AppService {
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
-    getClusters(): Observable<Response> {
-        return this._http.get(`${baseUrl}/cluster`)
-                        .pipe(map(res => res.json()))
+    getClusters(pointcloud: Array<Array<number>>): Observable<Response> {
+        let body = new FormData();
+        if (typeof pointcloud != 'undefined') {
+            body.append('points', JSON.stringify(pointcloud));
+        }
+        return this._http.post(`${baseUrl}/cluster`, body);
     }
 
     getPoints(filename: string): Observable<Response> {
