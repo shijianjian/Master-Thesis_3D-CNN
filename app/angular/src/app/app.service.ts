@@ -36,4 +36,14 @@ export class AppService {
         return this._httpClient.post<CameraSettings>(`${baseUrl}/plot/settings`, body);
     }
 
+    predict(pointcloud: number[][]) {
+        let body = new FormData();
+        if (typeof pointcloud != 'undefined') {
+            body.append('points', JSON.stringify(pointcloud));
+        } else {
+            throw new TypeError("Point Cloud should be 2d array, not 'undefined'");
+        }
+        return this._http.post(`${baseUrl}/predict`, body);
+    }
+
 }

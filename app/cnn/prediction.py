@@ -1,11 +1,13 @@
-import os
+"""
+Prediction
+"""
 import numpy as np
 import tensorflow as tf
 
-model_path = os.path.join(os.getcwd(), 'trained_model', 'model-2')
-
 def predict(voxels, model_path, output_format='weights', device_name='cpu:0'):
     """
+    Recieves voxelized point cloud data
+
     Output_format can be 'weights' or 'probs'.
     
     'weights' will output the weight straight away which can be treated as confident.

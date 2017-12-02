@@ -10,8 +10,9 @@ from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 
 from cnn.util.dbscan import dbscan_labels, find_cluster_points
-from cnn.util.process_pointcloud import norm_point
+from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.plot.camera_config import plot_voxel_points
+from cnn.prediction import predict
 
 APP = Flask(__name__)
 CORS(APP)
@@ -97,6 +98,57 @@ def get_points(filename):
         status=200,
         mimetype='application/json'
     )
+
+
+@APP.route('/predict', methods=['POST'])
+@cross_origin()
+def prediction():
+    if request.method == 'POST':
+        points = None
+        try:
+            # convert string to 2d numpy array
+            points = request.form['points']
+            import ast
+            points = ast.literal_eval(points)
+        except Exception as e:
+            print('Error on recieving points')
+            print(e)
+
+        model_path = os.path.join(os.getcwd(), 'trained_model', 'model-2')
+
+        if points is None:
+            return APP.response_class(
+                response='No points found',
+                status=400,
+                mimetype='application/json'
+            )
+        
+        tidiedPoints = []
+        points = np.asarray(points)
+        if len(points.shape) == 2:
+            vox = voxelize3D(points, dim=[32,32,32])
+            vox_chan = np.array(vox).reshape(vox.shape + (1,))
+            tidiedPoints.append(vox_chan);
+        elif len(points.shape) == 3:
+            for _, val in enumerate(points):
+                vox = voxelize3D(points, dim=[32,32,32])
+                vox_chan = np.array(vox).reshape(vox.shape + (1,))
+                tidiedPoints.append(vox_chan);
+        else:
+            return APP.response_class(
+                response='Invalid points',
+                status=400,
+                mimetype='application/json'
+            )
+        
+        res = predict(tidiedPoints, model_path, output_format='weights', device_name='cpu:0')
+        _max = np.argmax(res)
+
+        return APP.response_class(
+            response=str(_max),
+            status=200,
+            mimetype='application/json'
+        )
 
 
 

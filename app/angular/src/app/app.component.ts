@@ -1,24 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload/ng2-file-upload';
 
 import { AppService } from './app.service';
 import { baseUrl } from './settings';
 import { CameraSettings } from './model/camera-settings';
+import { PointsGroup } from './model/pointsGroup';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styles: [``]
+  host: {'[class.container]': 'cont'},
+  styles: [`
+  :host {
+    display: flex;
+    padding-top: 30px;
+  }
+  `]
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   uploader: FileUploader;
-  response: string;
+  uploadState: boolean;
   filename: string;
 
   pointcloud: Array<Array<number>>;
-  segs: CameraSettings[] = [];
+  segs: Array<PointsGroup> = [];
   cameraSettings: CameraSettings;
+
+  @HostBinding('class.container') cont: boolean = true;
 
   constructor(
     private $appService: AppService
@@ -39,14 +48,14 @@ export class AppComponent implements OnInit {
     });
     
     this.uploader.onAfterAddingFile = (file) => {
+      this.uploadState = false;
       this.prepareUploader(file);
       this.filename = file._file.name;
       this.uploader.uploadAll();
     };
-    this.response = '';
 
     this.uploader.response.subscribe(res => {
-      this.response = res;
+      this.uploadState = true;
       this.$appService.getPoints(this.filename).subscribe(
         data => {
           this.pointcloud = data.json();
@@ -61,23 +70,28 @@ export class AppComponent implements OnInit {
 
   }
 
-  ngOnInit() {
-    
-  }
-
   private prepareUploader(file) {
     this.uploader.onBuildItemForm = (item, form) => {
         form.append("file", file);
     }
   }
 
+  predict(points: number[][], index: number) {
+    this.$appService.predict(points).subscribe((data) => {
+      this.segs[index].result = data.json();
+    })
+  }
+
   segment() {
-    this.$appService.getClusters(this.pointcloud).subscribe(
-      data => {
-        for(let key in data.json()) {
-          this.$appService.getCameraSettings(data.json()[key], undefined, `${this.filename}_${key}`).subscribe(
+    this.$appService.getClusters(this.pointcloud).subscribe(data => {
+        let dict = data.json();
+        for(let key in dict) {
+          this.$appService.getCameraSettings(dict[key], undefined, `${this.filename}_${key}`).subscribe(
             csetting => {
-              this.segs.push(csetting);
+              this.segs.push({
+                points: dict[key],
+                camera: csetting
+              })
             }
           )
         }
