@@ -57,11 +57,11 @@ def find_cluster_points(point_cloud, labels):
     for idx, val in enumerate(labels):
         if val not in res:
             li = list()
-            li.append(point_cloud[idx].tolist())
+            li.append(point_cloud[idx])
             res.update({val: li})
         else:
             li = res[val]
-            li.append(point_cloud[idx].tolist())
+            li.append(point_cloud[idx])
             res.update( {val: li} )
     
     renew_dict = dict()

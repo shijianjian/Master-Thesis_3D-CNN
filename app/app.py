@@ -3,13 +3,15 @@ MicroService for 3D point cloud CNN
 """
 
 import os
+import numpy as np
 from pyntcloud import PyntCloud
 from flask import Flask, json, render_template, send_from_directory, request, redirect
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
+
 from cnn.util.dbscan import dbscan_labels, find_cluster_points
 from cnn.util.process_pointcloud import norm_point
-
+from cnn.plot.camera_config import plot_voxel_points
 
 APP = Flask(__name__)
 CORS(APP)
@@ -28,12 +30,12 @@ def after_request(response):
     return response
 
 
-APP_STATIC_PATH = os.path.join(os.getcwd(), 'angular', 'dist')
+APP_STATIC_PATH = os.getcwd()
 APP.static_folder = APP_STATIC_PATH
 APP.template_folder = APP_STATIC_PATH
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
-ALLOWED_EXTENSIONS = set(['pts', 'md'])
+ALLOWED_EXTENSIONS = set(['pts'])
 APP.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @APP.route('/', methods=['GET'])
@@ -65,12 +67,28 @@ def cluster_point_cloud():
     labels = dbscan_labels(normalized_cloud, 0.02, 10, algorithm='ball_tree')
     cluster = find_cluster_points(normalized_cloud, labels)
  
-    response = APP.response_class(
+    return APP.response_class(
         response=json.dumps(cluster),
         status=200,
         mimetype='application/json'
     )
-    return response
+
+@APP.route('/plot/points/<path:filename>', methods=['GET'])
+@cross_origin()
+def get_points(filename):
+    """
+    Calculate camera settings.
+
+    'filename': the relative path of the file uploaded previously in APP.config['UPLOAD_FOLDER'].
+    """
+    my_point_cloud = PyntCloud.from_file(os.path.join(APP.config['UPLOAD_FOLDER'], filename), sep=" ", header=0, names=["x", "y", "z"])
+    normalized_cloud = norm_point(my_point_cloud.xyz)
+    return APP.response_class(
+        response=json.dumps(normalized_cloud),
+        status=200,
+        mimetype='application/json'
+    )
+
 
 
 @APP.route('/upload', methods=['GET', 'POST', 'OPTIONS'])
@@ -97,6 +115,43 @@ def upload_file():
             return "File uploaded"
 
     return index()
+
+
+@APP.route('/plot/settings', methods=['POST'])
+@cross_origin()
+def render():
+    """
+    Calculate camera settings.
+
+    points: recives XYZ coordinates.
+    """
+    if request.method == 'POST':
+        points = None
+        voxels = None
+        try:
+            # convert string to 2d numpy array
+            points = request.form['points']
+            import ast
+            points = ast.literal_eval(points)
+        except Exception as e:
+            print('Error on recieving points')
+            print(e)
+
+        try:
+            voxels = request.form['voxels']
+        except Exception as e:
+            print('Error on recieving voxels')
+            print(e)
+
+        name = request.form['name']
+        
+        settings = plot_voxel_points(voxels, np.asarray(points), filename=name)
+
+        return APP.response_class(
+            response=json.dumps(settings),
+            status=200,
+            mimetype='application/json'
+        )
 
 
 def allowed_file(filename):

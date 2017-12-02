@@ -1,3 +1,6 @@
+"""
+Camera config for plotting.
+"""
 import os
 import numpy as np
 import pandas as pd
@@ -6,13 +9,15 @@ from pyntcloud import PyntCloud
 
 from cnn.util.process_pointcloud import find_ranges
 
-def plot_voxel_points(voxelgrid, point_cloud, output_name=None, cmap="Oranges", axis=True):
+def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="Oranges", axis=True):
     """
     Plot voxel grid and point cloud together,
     Mainly used for object detection
 
     Can be used separatly either. Just set another one as None.
     """
+    scaled_shape = (1,1,1)
+    axis_size = 0
     if voxelgrid is not None:
         # For Voxel Grid
         scaled_shape = voxelgrid.shape
@@ -29,14 +34,12 @@ def plot_voxel_points(voxelgrid, point_cloud, output_name=None, cmap="Oranges", 
 
         if axis:
             axis_size = points.ptp() * 1.5
-        else:
-            axis_size = 0
+            
     
     if point_cloud is not None:
-        # For point cloud
-        filename = 'pyntcloud_plot'
+        httppath = os.path.join('uploads', "{}.ply".format(filename))
+        filepath = os.path.join(os.getcwd(), httppath)
         
-        path = os.path.join(os.getcwd(), filename + ".pts")
         # Fit point cloud into Voxel Grid
         (x_min, x_max), (y_min, y_max), (z_min, z_max) = find_ranges(point_cloud)
         new_point_cloud = np.empty(point_cloud.shape)
@@ -56,7 +59,7 @@ def plot_voxel_points(voxelgrid, point_cloud, output_name=None, cmap="Oranges", 
             points_df[i] = colors[:, n]
 
         cloud = PyntCloud(points_df)
-        cloud.to_file("{}.ply".format(filename), also_save=["mesh"])
+        cloud.to_file(filepath, also_save=["mesh"])
         
         if voxelgrid is None:
             camera_position = (point_cloud.max(0) + abs(point_cloud.max(0))).tolist()
@@ -64,13 +67,15 @@ def plot_voxel_points(voxelgrid, point_cloud, output_name=None, cmap="Oranges", 
 
     placeholders = {}
 
-    placeholders["POINTS_X"] = points[:, 0].tolist()
-    placeholders["POINTS_Y"] = points[:, 1].tolist()
-    placeholders["POINTS_Z"] = points[:, 2].tolist()
+    if voxelgrid is not None:
+        placeholders["POINTS_X"] = points[:, 0].tolist()
+        placeholders["POINTS_Y"] = points[:, 1].tolist()
+        placeholders["POINTS_Z"] = points[:, 2].tolist()
 
-    placeholders["R"] = rgb[:, 0].tolist()
-    placeholders["G"] = rgb[:, 1].tolist()
-    placeholders["B"] = rgb[:, 2].tolist()
+    if voxelgrid is not None:
+        placeholders["R"] = rgb[:, 0].tolist()
+        placeholders["G"] = rgb[:, 1].tolist()
+        placeholders["B"] = rgb[:, 2].tolist()
 
     placeholders["S_x"] = 1
     placeholders["S_y"] = 1
@@ -86,12 +91,12 @@ def plot_voxel_points(voxelgrid, point_cloud, output_name=None, cmap="Oranges", 
 
     placeholders["AXIS_SIZE"] = axis_size
 
-    placeholders["N_VOXELS"] = sum(vector.reshape(-1) > 0)
+    if voxelgrid is not None:
+        placeholders["N_VOXELS"] = sum(vector.reshape(-1) > 0)
 
-    placeholders["FILENAME"] = "\"" + filename + "\""
+    if point_cloud is not None:
+        placeholders["FILENAME"] = str(httppath)
+
     placeholders["POINT_SIZE"] = 0.001
-
-    if output_name is None:
-        output_name = "plotVG.html"
 
     return placeholders

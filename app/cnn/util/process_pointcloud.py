@@ -46,7 +46,7 @@ def segment_points(point_cloud, target_ranges):
                 if coor[2] >= target_z_range[0] and coor[2] <= target_z_range[1]:
                     points.append(coor)
                     
-    return np.asarray(points)
+    return points
 
 
 def norm_point(point_cloud):
@@ -63,6 +63,6 @@ def norm_point(point_cloud):
         row[0] = (coor[0] - x_min)/biggest_value
         row[1] = (coor[1] - y_min)/biggest_value
         row[2] = (coor[2] - z_min)/biggest_value
-        normalized_points.append(row)
+        normalized_points.append(row.tolist())
         
-    return np.asarray(normalized_points)
+    return normalized_points
