@@ -6,16 +6,19 @@ import { map } from 'rxjs/operators';
 
 import { baseUrl } from "./settings";
 import { CameraSettings } from "./model/camera-settings";
+import { ClusterSettings } from "./model/pointsGroup";
 
 @Injectable()
 export class AppService {
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
-    getClusters(pointcloud: Array<Array<number>>): Observable<Response> {
+    getClusters(ClusterSettings: ClusterSettings): Observable<Response> {
         let body = new FormData();
-        if (typeof pointcloud != 'undefined') {
-            body.append('points', JSON.stringify(pointcloud));
+        if (typeof ClusterSettings != 'undefined') {
+            body.append('points', JSON.stringify(ClusterSettings.points));
+            body.append('epsilon', ClusterSettings.epsilon.toString());
+            body.append('minPoints', ClusterSettings.minPoints.toString());
         }
         return this._http.post(`${baseUrl}/cluster`, body);
     }

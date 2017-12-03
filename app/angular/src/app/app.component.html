@@ -5,13 +5,18 @@
     </div>
     <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera>
     <!-- TODO: ADD seg config sliders -->
-    <input class="btn btn-outline-primary" *ngIf="filename" style="float:right;" type="button" value="Seg" (click)="segment()"/>
+    <app-segmentation 
+        *ngIf="filename"
+        [pointcloud]="pointcloud" 
+        [filename]="filename" 
+        (segments)="segs=$event"
+    ></app-segmentation>
 </div>
 <div class="col-4" *ngIf="segs.length > 0">
     <div>Segmentations:</div>
     <ng-container *ngFor="let seg of segs; let i = index;">
         <app-camera style="min-height:25vh;" class="app-container-inline" [settings]="seg.camera"></app-camera>
-        <div style="margin-bottom: 5px; display:flex; justify-content:space-between;">
+        <div style="margin-bottom: 5px; display:flex; justify-content:space-between;">   
             <input class="btn btn-outline-primary" type="button" value="Recognize" (click)="predict(seg.points, i)"/>
             <span>{{ seg.result }}</span>
         </div>

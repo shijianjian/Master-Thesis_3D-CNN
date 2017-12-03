@@ -65,16 +65,20 @@ def cluster_point_cloud():
     """
     if request.method == 'POST':
         points = None
+        eps = None
+        min_points = None
         try:
             # convert string to 2d numpy array
             points = request.form['points']
+            eps = float(request.form['epsilon'])
+            min_points = float(request.form['minPoints'])
             import ast
             points = ast.literal_eval(points)
         except Exception as e:
             print('Error on recieving points')
             print(e)
     normalized_cloud = norm_point(points)
-    labels = dbscan_labels(normalized_cloud, 0.02, 10, algorithm='ball_tree')
+    labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm='ball_tree')
     cluster = find_cluster_points(normalized_cloud, labels)
  
     return APP.response_class(

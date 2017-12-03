@@ -5,3 +5,9 @@ export interface PointsGroup {
     camera: CameraSettings;
     result?: string;
 }
+
+export interface ClusterSettings {
+    points: number[][];
+    epsilon: number;
+    minPoints: number;
+}

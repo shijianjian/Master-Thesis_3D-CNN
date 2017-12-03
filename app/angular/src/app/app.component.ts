@@ -82,22 +82,4 @@ export class AppComponent {
     })
   }
 
-  segment() {
-    this.$appService.getClusters(this.pointcloud).subscribe(data => {
-        let dict = data.json();
-        for(let key in dict) {
-          this.$appService.getCameraSettings(dict[key], undefined, `${this.filename}_${key}`).subscribe(
-            csetting => {
-              this.segs.push({
-                points: dict[key],
-                camera: csetting
-              })
-            }
-          )
-        }
-        this.segs = Array.from(Object.assign({}, this.segs));
-      }
-    )
-  }
-
 }
