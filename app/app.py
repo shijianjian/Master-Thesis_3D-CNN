@@ -87,6 +87,7 @@ def cluster_point_cloud():
         mimetype='application/json'
     )
 
+
 @APP.route('/plot/points/<path:filename>', methods=['GET'])
 @cross_origin()
 def get_points(filename):
@@ -104,39 +105,54 @@ def get_points(filename):
     )
 
 
+@APP.route('/models', methods=['GET'])
+@cross_origin()
+def get_models():
+    model_path = os.path.join(APP_STATIC_PATH, 'trained_model')
+    res = []
+    for file in os.listdir(model_path):
+        if file.endswith(".meta"):
+            res.append(file[:-5])
+    return APP.response_class(
+        response=json.dumps(res),
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @APP.route('/predict', methods=['POST'])
 @cross_origin()
 def prediction():
     if request.method == 'POST':
+        import ast
         points = None
         try:
             # convert string to 2d numpy array
             points = request.form['points']
-            import ast
+            model = request.form['model']
             points = ast.literal_eval(points)
         except Exception as e:
-            print('Error on recieving points')
+            print('Error on recieving points or model')
             print(e)
-
-        model_path = os.path.join(os.getcwd(), 'trained_model', 'model-2')
+        print('Using model:', model)
+        model_path = os.path.join(os.getcwd(), 'trained_model', model)
 
         if points is None:
             return APP.response_class(
                 response='No points found',
                 status=400,
                 mimetype='application/json'
-            )
-        
+            )    
         tidiedPoints = []
         points = np.asarray(points)
         if len(points.shape) == 2:
-            vox = voxelize3D(points, dim=[32,32,32])
-            vox_chan = np.array(vox).reshape(vox.shape + (1,))
+            vox = voxelize3D(points, dim=[32, 32, 32])
+            vox_chan = np.array(vox).reshape(vox.shape + (1, ))
             tidiedPoints.append(vox_chan);
         elif len(points.shape) == 3:
             for _, val in enumerate(points):
-                vox = voxelize3D(points, dim=[32,32,32])
-                vox_chan = np.array(vox).reshape(vox.shape + (1,))
+                vox = voxelize3D(points, dim=[32, 32, 32])
+                vox_chan = np.array(vox).reshape(vox.shape + (1, ))
                 tidiedPoints.append(vox_chan);
         else:
             return APP.response_class(
@@ -144,12 +160,20 @@ def prediction():
                 status=400,
                 mimetype='application/json'
             )
-        
         res = predict(tidiedPoints, model_path, output_format='weights', device_name='cpu:0')
         _max = np.argmax(res)
 
+        try:
+            with open(model_path + '.label') as f:
+                content = f.readlines()
+            # Only read the first line
+            label = ast.literal_eval(content[0])
+            print("Label file found")
+            _max = label[_max]
+        except FileNotFoundError:
+            print("Label file not found")
         return APP.response_class(
-            response=str(_max),
+            response=json.dumps(str(_max)),
             status=200,
             mimetype='application/json'
         )

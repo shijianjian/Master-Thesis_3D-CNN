@@ -1,0 +1,10 @@
+<mat-form-field>
+    <mat-select
+        placeholder="Select Pre-trained Model"
+        (selectionChange)="onSelected($event)"
+        [(value)]="selected">
+        <mat-option *ngFor="let model of models" [value]="model">
+        {{ model }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>

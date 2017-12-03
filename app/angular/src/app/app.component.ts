@@ -14,6 +14,7 @@ import { PointsGroup } from './model/pointsGroup';
   :host {
     display: flex;
     padding-top: 30px;
+    justify-content: space-between;
   }
   `]
 })
@@ -76,10 +77,9 @@ export class AppComponent {
     }
   }
 
-  predict(points: number[][], index: number) {
-    this.$appService.predict(points).subscribe((data) => {
-      this.segs[index].result = data.json();
-    })
+  onSegments(event) {
+    this.segs = Array.from(Object.assign({}, event));
+    console.log(this.segs);
   }
 
 }

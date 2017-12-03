@@ -7,9 +7,12 @@ import { map } from 'rxjs/operators';
 import { baseUrl } from "./settings";
 import { CameraSettings } from "./model/camera-settings";
 import { ClusterSettings } from "./model/pointsGroup";
+import { Subject, BehaviorSubject } from "rxjs";
 
 @Injectable()
 export class AppService {
+
+    selectedModel: Subject<string> = new BehaviorSubject<string>(null);
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
@@ -39,14 +42,19 @@ export class AppService {
         return this._httpClient.post<CameraSettings>(`${baseUrl}/plot/settings`, body);
     }
 
-    predict(pointcloud: number[][]) {
+    predict(pointcloud: number[][], model: string): Observable<Response>  {
         let body = new FormData();
         if (typeof pointcloud != 'undefined') {
             body.append('points', JSON.stringify(pointcloud));
+            body.append('model', model);
         } else {
             throw new TypeError("Point Cloud should be 2d array, not 'undefined'");
         }
         return this._http.post(`${baseUrl}/predict`, body);
+    }
+
+    getModels(): Observable<Response>  {
+        return this._http.get(`${baseUrl}/models`);
     }
 
 }

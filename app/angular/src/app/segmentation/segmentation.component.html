@@ -1,0 +1,35 @@
+<div style="display:flex; justify-content:space-between;">
+    <mat-slider 
+        style="width:300px;"
+        [step]= "epsilon_step"
+        [max]="epsilon_max"
+        [min]="epsilon_min"
+        [(ngModel)]="epsilon"></mat-slider>
+    <mat-form-field style="width: 70px;">
+        <input matInput type="number" 
+            [step]= "epsilon_step" 
+            [formControl]="epsilonControll" 
+            placeholder="Epsilon" 
+            [(ngModel)]="epsilon">
+        <mat-error *ngIf="epsilonControll.invalid">Invalid</mat-error>
+    </mat-form-field>
+</div>
+
+<div style="display:flex; justify-content:space-between;">
+    <mat-slider 
+        style="width:300px;"
+        [step]= "points_step"
+        [max]="max_points"
+        [min]="min_points"
+        [(ngModel)]="points"></mat-slider>
+    <mat-form-field style="width: 70px;">
+        <input matInput type="number" 
+            [step]= "points_step" 
+            [formControl]="pointsControll" 
+            placeholder="Min Points" 
+            [(ngModel)]="points">
+        <mat-error *ngIf="pointsControll.invalid">Invalid</mat-error>
+    </mat-form-field>
+</div>
+
+<input class="btn btn-outline-primary" style="float:right;" type="button" value="Segment" (click)="segment()"/>

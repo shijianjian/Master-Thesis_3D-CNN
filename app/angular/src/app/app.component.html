@@ -1,10 +1,13 @@
 <div class="col-8">
-    <div class="row">
-        <label for="fileUpload" class="btn btn-block btn-outline-primary">Choose File</label>
-        <input id="fileUpload" style="display: none;" type="file" ng2FileSelect [uploader]="uploader" />
+    <div style="display: flex; justify-content:space-around;">
+        <div>
+            <label for="fileUpload" class="btn btn-block btn-outline-primary">Choose File</label>
+            <input id="fileUpload" style="display: none;" type="file" ng2FileSelect [uploader]="uploader" />
+        </div>
+        <app-model-selector></app-model-selector>
     </div>
     <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera>
-    <!-- TODO: ADD seg config sliders -->
+    
     <app-segmentation 
         *ngIf="filename"
         [pointcloud]="pointcloud" 
@@ -12,13 +15,6 @@
         (segments)="segs=$event"
     ></app-segmentation>
 </div>
-<div class="col-4" *ngIf="segs.length > 0">
-    <div>Segmentations:</div>
-    <ng-container *ngFor="let seg of segs; let i = index;">
-        <app-camera style="min-height:25vh;" class="app-container-inline" [settings]="seg.camera"></app-camera>
-        <div style="margin-bottom: 5px; display:flex; justify-content:space-between;">   
-            <input class="btn btn-outline-primary" type="button" value="Recognize" (click)="predict(seg.points, i)"/>
-            <span>{{ seg.result }}</span>
-        </div>
-    </ng-container>
+<div class="col-4" style="padding-left: 15px;">
+    <app-segmentation-list [segments]="segs"></app-segmentation-list>
 </div>

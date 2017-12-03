@@ -1,0 +1,14 @@
+<ng-container *ngIf="segments.length > 0">
+    <div>Segmentations:</div>
+    <ng-container *ngFor="let seg of selectedSegments; let i = index;">
+        <app-camera style="min-height:25vh;" class="app-container-inline" [settings]="seg.camera"></app-camera>
+        <app-seg-prediction [seg]="seg" (prediction)="segments[i].result=$event;"></app-seg-prediction>
+    </ng-container>
+
+    <mat-paginator 
+        [length]="segments.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageUpdate($event)">
+    </mat-paginator>
+</ng-container>

@@ -6,15 +6,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { AppComponent } from './app.component';
-import { CameraComponent } from './camera/camera.component';
 import { AppService } from './app.service';
 import { CameraGuiService } from './camera-gui.service';
 import { SegmentationModule } from './segmentation/segmentation.module';
+import { CameraModule } from './camera/camera.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    CameraComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -22,6 +21,7 @@ import { SegmentationModule } from './segmentation/segmentation.module';
     HttpModule,
     HttpClientModule,
     FileUploadModule,
+    CameraModule,
     SegmentationModule
   ],
   providers: [

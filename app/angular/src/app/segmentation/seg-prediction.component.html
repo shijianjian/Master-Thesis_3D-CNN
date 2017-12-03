@@ -1,0 +1,10 @@
+<div style="margin-bottom: 5px; display:flex; justify-content:space-between;">
+    <input 
+        class="btn btn-outline-primary" 
+        style="display:block;" 
+        type="button" 
+        value="Recognize" 
+        (click)="predict(seg.points)"/>
+    <mat-spinner diameter="35" *ngIf="running"></mat-spinner>
+    <div *ngIf="!running">{{ seg.result }}</div>
+</div>
