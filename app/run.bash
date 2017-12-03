@@ -1,1 +1,1 @@
-export Flask_APP=app.py && flask run
+rm -rf ./assets && rm -rf ./uploads && cd angular && ng build --aot=true && cd .. && mv ./angular/dist/* ./ && python app.py

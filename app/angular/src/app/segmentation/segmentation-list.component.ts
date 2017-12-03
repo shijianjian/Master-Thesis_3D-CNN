@@ -27,7 +27,8 @@ export class SegmentationListComponent implements DoCheck {
   running: boolean = false;
 
   ngDoCheck() {
-    if (this.selectedSegments.length < this.pageSize) {
+    if (this.selectedSegments.length < this.pageSize 
+          && this.segments.length > this.selectedSegments.length) {
       this.selectedSegments = Array.from(this.segments.slice(0, this.pageSize));
     }
   }

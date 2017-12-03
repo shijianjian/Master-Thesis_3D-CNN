@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pyntcloud import PyntCloud
 
-from cnn.util.process_pointcloud import find_ranges
+from cnn.util.process_pointcloud import find_ranges, norm_point
 
 def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="Oranges", axis=True):
     """
@@ -16,7 +16,7 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
 
     Can be used separatly either. Just set another one as None.
     """
-    scaled_shape = (1,1,1)
+    scaled_shape = [1,1,1]
     axis_size = 0
     if voxelgrid is not None:
         # For Voxel Grid
@@ -39,17 +39,8 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
     if point_cloud is not None:
         httppath = os.path.join('uploads', "{}.ply".format(filename))
         filepath = os.path.join(os.getcwd(), httppath)
-        
-        # Fit point cloud into Voxel Grid
-        (x_min, x_max), (y_min, y_max), (z_min, z_max) = find_ranges(point_cloud)
-        new_point_cloud = np.empty(point_cloud.shape)
-        for idx, row in enumerate(point_cloud):
-            _r = np.empty(row.shape)
-            _r[0] = (row[0] - x_min)/(x_max - x_min)*scaled_shape[0]
-            _r[1] = (row[1] - y_min)/(y_max - y_min)*scaled_shape[1]
-            _r[2] = (row[2] - z_min)/(z_max - z_min)*scaled_shape[2]
-            new_point_cloud[idx] = _r
-        point_cloud = new_point_cloud
+
+        point_cloud = np.asarray(norm_point(point_cloud))*scaled_shape
         
         # Orange by default
         colors = np.repeat([[255, 125, 0]], point_cloud.shape[0], axis=0)

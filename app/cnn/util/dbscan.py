@@ -42,14 +42,11 @@ def dbscan_labels(pointcloud, epsilon, minpoints, rgb_weight=0, algorithm='ball_
 def find_cluster_points(point_cloud, labels):
     """
     Group relative points together.
-    
     Inputs:
-        point_cloud: 
+        point_cloud:
             x,y,z based point cloud
-        
         labels:
             label comes back from dbscan_labels
-
     Returns:
         A dict of grouped points according to label.
     """
@@ -63,9 +60,7 @@ def find_cluster_points(point_cloud, labels):
             li = res[val]
             li.append(point_cloud[idx])
             res.update( {val: li} )
-    
     renew_dict = dict()
     for idx, key in enumerate(res):
         renew_dict.update({str(key): res[key]})
-    
     return renew_dict

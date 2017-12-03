@@ -29,9 +29,7 @@ export class SegPredictionComponent implements OnInit {
     
     predict(points: number[][]) {
         this.running = true;
-        console.log(this.model);
         this.$appService.predict(points, this.model).subscribe((data) => {
-            console.log(data.json())
             this.prediction.emit(data.json());
             this.running = false;
         })
