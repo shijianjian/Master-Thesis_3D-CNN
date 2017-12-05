@@ -3,7 +3,7 @@ Cluster algorithm for clustering points within a point cloud.
 
 [x, y, z] or [x, y, z, r, g, b] is only acceptable shape for a good performance.
 """
-
+import numpy as np
 from sklearn.cluster import dbscan
 from sklearn.cluster import mean_shift
 from sklearn.cluster.k_means_ import k_means
@@ -92,8 +92,8 @@ def mean_shift_labels(pointcloud, bandwidth=None, max_iter=300, n_jobs=1):
     # Set bandwidth to None if it is 0
     if bandwidth == 0:
         bandwidth = None
-        
-    _, labels = mean_shift(pointcloud, bandwidth=bandwidth, seeds=None, bin_seeding=False,
+    
+    _, labels = mean_shift(np.asarray(pointcloud), bandwidth=bandwidth, seeds=None, bin_seeding=False,
                            min_bin_freq=1, cluster_all=True, max_iter=max_iter, n_jobs=n_jobs)
     return labels
 

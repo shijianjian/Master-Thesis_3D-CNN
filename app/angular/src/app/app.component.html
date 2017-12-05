@@ -1,4 +1,4 @@
-<div class="col-8">
+<div class="col-7">
     <div style="display: flex; justify-content:space-around;">
         <div>
             <label for="fileUpload" class="btn btn-block btn-outline-primary">Choose File</label>
@@ -12,9 +12,9 @@
         *ngIf="filename"
         [pointcloud]="pointcloud" 
         [filename]="filename" 
-        (segments)="segs=$event"
+        (segments)="onSegments($event)"
     ></app-segmentation>
 </div>
-<div class="col-4" style="padding-left: 15px;">
+<div class="col-5" style="padding-left: 15px;">
     <app-segmentation-list [segments]="segs"></app-segmentation-list>
 </div>

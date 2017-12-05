@@ -76,9 +76,8 @@ export class AppComponent {
     }
   }
 
-  onSegments(event) {
-    this.segs = Array.from(Object.assign({}, event));
-    console.log(this.segs);
+  onSegments(event: PointsSettings[]) {
+    this.segs = Array.from(event);
   }
 
 }

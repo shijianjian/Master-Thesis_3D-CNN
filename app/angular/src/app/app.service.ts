@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { baseUrl } from "./settings";
 import { CameraSettings } from "./model/points-settings";
-import { ClusterSettings, DBSCAN, MeanShift } from "./model/cluster-algorithm";
+import { ClusterSettings, DBSCAN, MeanShift, ClusterAlgorithms } from "./model/cluster-algorithm";
 import { Subject, BehaviorSubject } from "rxjs";
 
 @Injectable()
@@ -16,14 +16,14 @@ export class AppService {
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
-    getClusters(pointcloud: number[][], clusterSettings: ClusterSettings): Observable<Response> {
+    getClusters(pointcloud: number[][], clusterSettings: ClusterSettings, clusterAlgorithm: ClusterAlgorithms): Observable<Response> {
         let body = new FormData();
         if (typeof pointcloud != 'undefined' 
             && typeof clusterSettings != 'undefined') {
             body.append('pointcloud', JSON.stringify(pointcloud));
+            body.append('cluster_algorithm', clusterAlgorithm.toString());
             for (let key in clusterSettings.cluster) {
                 body.append(key, clusterSettings.cluster[key].toString());
-                console.log(key + "  ", clusterSettings.cluster[key].toString())
             }
             return this._http.post(`${baseUrl}/cluster`, body);
         }

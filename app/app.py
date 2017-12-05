@@ -9,7 +9,7 @@ from flask import Flask, json, render_template, send_from_directory, request, re
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 
-from cnn.util.cluster import dbscan_labels, find_cluster_points
+from cnn.util.cluster import dbscan_labels, mean_shift_labels, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.plot.camera_config import plot_voxel_points
 from cnn.prediction import predict
@@ -28,6 +28,10 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
 
@@ -64,30 +68,36 @@ def cluster_point_cloud():
     Output point cloud cluster according to the configuration.
     """
     if request.method == 'POST':
-        pointcloud = None
-        eps = None
-        min_points = None
-        try:
-            # convert string to 2d numpy array
-            pointcloud = request.form['pointcloud']
+        cluster_algorithm = request.form['cluster_algorithm']
+        # convert string to 2d numpy array
+        pointcloud = request.form['pointcloud']
+        import ast
+        pointcloud = ast.literal_eval(pointcloud)
+        normalized_cloud = norm_point(pointcloud)
+        print(cluster_algorithm)
+
+        if cluster_algorithm == 'dbscan':
             eps = float(request.form['epsilon'])
             min_points = float(request.form['minPoints'])
             algorithm = request.form['algorithm']
-            import ast
-            pointcloud = ast.literal_eval(pointcloud)
-        except Exception as e:
-            print('Error on recieving points')
-            print(e)
-    normalized_cloud = norm_point(pointcloud)
-    labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm=algorithm)
-    cluster = find_cluster_points(normalized_cloud, labels)
- 
-    return APP.response_class(
-        response=json.dumps(cluster),
-        status=200,
-        mimetype='application/json'
-    )
+            labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm=algorithm)
+        elif cluster_algorithm == 'mean_shift':
+            bandwidth = float(request.form['bandwidth'])
+            max_iter = float(request.form['max_iter'])
+            labels = mean_shift_labels(normalized_cloud, bandwidth=bandwidth, max_iter=max_iter, n_jobs=4)
 
+        cluster = find_cluster_points(normalized_cloud, labels)
+        return APP.response_class(
+            response=json.dumps(cluster),
+            status=200,
+            mimetype='application/json'
+        )
+    else:
+        return APP.response_class(
+            response="Method doesn't support",
+            status=200,
+            mimetype='application/json'
+        )
 
 @APP.route('/plot/points/<path:filename>', methods=['GET'])
 @cross_origin()

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, DoCheck } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { PageEvent } from '@angular/material';
 
 import { PointsSettings } from '../model/points-settings';
@@ -13,7 +13,7 @@ import { PointsSettings } from '../model/points-settings';
     }
   `]
 })
-export class SegmentationListComponent implements DoCheck {
+export class SegmentationListComponent implements OnChanges {
 
   pageSize = 5;
   pageSizeOptions = [5, 10];
@@ -26,11 +26,8 @@ export class SegmentationListComponent implements DoCheck {
 
   running: boolean = false;
 
-  ngDoCheck() {
-    if (this.selectedSegments.length < this.pageSize 
-          && this.segments.length > this.selectedSegments.length) {
+  ngOnChanges() {
       this.selectedSegments = Array.from(this.segments.slice(0, this.pageSize));
-    }
   }
 
   onPageUpdate(pageEvent: PageEvent) {

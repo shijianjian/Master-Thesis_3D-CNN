@@ -55,7 +55,7 @@ export class SegmentationComponent {
 
     segment() {
       let settings = this.settings;
-      this.$appService.getClusters(this.pointcloud, settings).subscribe(data => {
+      this.$appService.getClusters(this.pointcloud, settings, ClusterAlgorithms[this.selected]).subscribe(data => {
           let segs: PointsSettings[] = [];
           let dict = data.json();
           for(let key in dict) {
@@ -65,10 +65,12 @@ export class SegmentationComponent {
                   points: dict[key],
                   camera: csetting
                 })
+                if (Object.keys(dict).length == segs.length) {
+                  this.segments.emit(segs);
+                }
               }
             )
           }
-          this.segments.emit(segs);
         }
       )
     }
