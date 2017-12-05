@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter} from '@angular/core';
-import { PointsGroup } from '../model/pointsGroup';
+import { PointsSettings } from '../model/points-settings';
 
 import { AppService } from '../app.service';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -16,7 +16,7 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class SegPredictionComponent implements OnInit {
 
-    @Input() seg: PointsGroup;
+    @Input() seg: PointsSettings;
     @Output() prediction = new EventEmitter<string>();
     running: boolean = false;
     private model: string;

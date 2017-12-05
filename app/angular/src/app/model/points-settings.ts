@@ -1,3 +1,10 @@
+
+export interface PointsSettings {
+    points: number[][];
+    camera: CameraSettings;
+    result?: string;
+}
+
 export interface CameraSettings {
     CAMERA_X?: number;
     CAMERA_Y?: number;

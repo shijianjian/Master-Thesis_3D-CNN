@@ -1,7 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSelectChange } from '@angular/material';
+
 import { AppService } from '../app.service';
-import { PointsGroup, ClusterSettings } from '../model/pointsGroup';
+import { PointsSettings } from '../model/points-settings';
+import { ClusterAlgorithms, ClusterSettings, DBSCANAlgorithm, DBSCAN, MeanShift } from '../model/cluster-algorithm';
+import { ClusterFormComponent } from './clusters/cluster-form.component';
 
 @Component({
   selector: 'app-segmentation',
@@ -14,43 +18,45 @@ import { PointsGroup, ClusterSettings } from '../model/pointsGroup';
   `]
 })
 export class SegmentationComponent {
-    epsilon_min = 0;
-    epsilon_max = 0.5;
-    epsilon_step = 0.001;
 
-    min_points = 0;
-    max_points = 10000;
-    points_step = 1;
+    @Input() pointcloud: number[][];
+    @Input() filename: string;
 
-    points = 10;
-    epsilon = 0.01;
+    @Output() segments = new EventEmitter<PointsSettings[]>();
 
-    @Input() pointcloud;
-    @Input() filename;
+    @ViewChild('clusterForm') clusterForm: ClusterFormComponent
 
-    @Output() segments = new EventEmitter<PointsGroup[]>();
+    models: string[];
+    selected: string;
 
     constructor(
       private $appService: AppService
-    ) {}
+    ) {
+      this.models = Object.keys(ClusterAlgorithms).filter(key => typeof ClusterAlgorithms[key] == 'string');
+    }
 
-    epsilonControll = new FormControl('', [
-      Validators.max(this.epsilon_max),
-      Validators.min(this.epsilon_min)
-    ]);
-    pointsControll = new FormControl('', [
-      Validators.max(this.max_points),
-      Validators.min(this.min_points)
-    ]);
+    onSelected(e: MatSelectChange) {
+      this.selected = ClusterAlgorithms[e.value];
+      this.clusterForm.onChangeAlgorithm(ClusterAlgorithms[e.value]);
+    }
+
+    private get settings(): ClusterSettings {
+      let settings = {};
+      for (let key in this.clusterForm.form.controls) {
+        settings[key] = this.clusterForm.form.controls[key].value;
+      }
+      switch (ClusterAlgorithms[this.selected]) {
+        case ClusterAlgorithms.DBSCAN:
+          return { cluster: (settings as DBSCAN) };
+        case ClusterAlgorithms.MEANSHIFT:
+          return { cluster: (settings as MeanShift) }
+      }
+    }
 
     segment() {
-      let settings: ClusterSettings = {
-        points: this.pointcloud,
-        epsilon: this.epsilon,
-        minPoints: this.points
-      }
-      this.$appService.getClusters(settings).subscribe(data => {
-          let segs: PointsGroup[] = [];
+      let settings = this.settings;
+      this.$appService.getClusters(this.pointcloud, settings).subscribe(data => {
+          let segs: PointsSettings[] = [];
           let dict = data.json();
           for(let key in dict) {
             this.$appService.getCameraSettings(dict[key], undefined, `${this.filename}_${key}`).subscribe(

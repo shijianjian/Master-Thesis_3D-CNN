@@ -1,0 +1,33 @@
+<form (ngSubmit)="onSubmit()" *ngIf="form" [formGroup]="form">
+    <ng-container *ngFor="let field of fields;" [ngSwitch]="field.type">
+        <mat-hint *ngIf="field.hint">{{field.hint}}</mat-hint>
+        <div *ngSwitchCase="'slider'" style="display:flex; justify-content:space-between;">
+            <mat-slider 
+                style="width:300px;"
+                [step]= "field.step"
+                [formControlName]="field.name"
+                [value]="form.controls[field.name].value"
+                [max]="field.max"
+                [min]="field.min"></mat-slider>
+            <mat-form-field style="width: 100px;">
+                <input matInput type="number" 
+                    [step]= "field.step" 
+                    [value]="form.controls[field.name].value"
+                    [formControlName]="field.name" 
+                    [placeholder]="field.placeholder">
+                <mat-error *ngIf="form.controls[field.name].invalid">Invalid</mat-error>
+            </mat-form-field>
+        </div>
+        <mat-form-field *ngSwitchCase="'selector'">
+            <mat-select 
+                [placeholder]="field.placeholder" 
+                [formControlName]="field.name">
+                <mat-option>--</mat-option>
+                <mat-option *ngFor="let option of field.options" [value]="option">
+                {{option}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.controls[field.name].invalid">Invalid</mat-error>
+        </mat-form-field>
+    </ng-container>
+</form>

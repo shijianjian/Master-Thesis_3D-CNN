@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@ang
 import { MeshBasicMaterialParameters, MeshBasicMaterial, PointsMaterial,
     Color, Camera, Material, BoxGeometry, Points, Object3D, Mesh } from 'three';
 
-import { CameraSettings } from '../model/camera-settings';
+import { CameraSettings } from '../model/points-settings';
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
 

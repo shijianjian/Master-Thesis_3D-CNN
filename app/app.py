@@ -9,7 +9,7 @@ from flask import Flask, json, render_template, send_from_directory, request, re
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 
-from cnn.util.dbscan import dbscan_labels, find_cluster_points
+from cnn.util.cluster import dbscan_labels, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.plot.camera_config import plot_voxel_points
 from cnn.prediction import predict
@@ -64,21 +64,22 @@ def cluster_point_cloud():
     Output point cloud cluster according to the configuration.
     """
     if request.method == 'POST':
-        points = None
+        pointcloud = None
         eps = None
         min_points = None
         try:
             # convert string to 2d numpy array
-            points = request.form['points']
+            pointcloud = request.form['pointcloud']
             eps = float(request.form['epsilon'])
             min_points = float(request.form['minPoints'])
+            algorithm = request.form['algorithm']
             import ast
-            points = ast.literal_eval(points)
+            pointcloud = ast.literal_eval(pointcloud)
         except Exception as e:
             print('Error on recieving points')
             print(e)
-    normalized_cloud = norm_point(points)
-    labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm='ball_tree')
+    normalized_cloud = norm_point(pointcloud)
+    labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm=algorithm)
     cluster = find_cluster_points(normalized_cloud, labels)
  
     return APP.response_class(
@@ -125,42 +126,42 @@ def get_models():
 def prediction():
     if request.method == 'POST':
         import ast
-        points = None
+        pointcloud = None
         try:
             # convert string to 2d numpy array
-            points = request.form['points']
+            pointcloud = request.form['pointcloud']
             model = request.form['model']
-            points = ast.literal_eval(points)
+            pointcloud = ast.literal_eval(pointcloud)
         except Exception as e:
             print('Error on recieving points or model')
             print(e)
         print('Using model:', model)
         model_path = os.path.join(os.getcwd(), 'trained_model', model)
 
-        if points is None:
+        if pointcloud is None:
             return APP.response_class(
                 response='No points found',
                 status=400,
                 mimetype='application/json'
             )    
-        tidiedPoints = []
-        points = np.asarray(points)
-        if len(points.shape) == 2:
-            vox = voxelize3D(points, dim=[32, 32, 32])
+        tidied_points = []
+        pointcloud = np.asarray(pointcloud)
+        if len(pointcloud.shape) == 2:
+            vox = voxelize3D(pointcloud, dim=[32, 32, 32])
             vox_chan = np.array(vox).reshape(vox.shape + (1, ))
-            tidiedPoints.append(vox_chan);
-        elif len(points.shape) == 3:
-            for _, val in enumerate(points):
-                vox = voxelize3D(points, dim=[32, 32, 32])
+            tidied_points.append(vox_chan);
+        elif len(pointcloud.shape) == 3:
+            for _, val in enumerate(pointcloud):
+                vox = voxelize3D(pointcloud, dim=[32, 32, 32])
                 vox_chan = np.array(vox).reshape(vox.shape + (1, ))
-                tidiedPoints.append(vox_chan);
+                tidied_points.append(vox_chan);
         else:
             return APP.response_class(
                 response='Invalid points',
                 status=400,
                 mimetype='application/json'
             )
-        res = predict(tidiedPoints, model_path, output_format='weights', device_name='cpu:0')
+        res = predict(tidied_points, model_path, output_format='weights', device_name='cpu:0')
         _max = np.argmax(res)
 
         try:
@@ -215,13 +216,13 @@ def render():
     points: recives XYZ coordinates.
     """
     if request.method == 'POST':
-        points = None
+        pointcloud = None
         voxels = None
         try:
             # convert string to 2d numpy array
-            points = request.form['points']
+            pointcloud = request.form['pointcloud']
             import ast
-            points = ast.literal_eval(points)
+            pointcloud = ast.literal_eval(pointcloud)
         except Exception as e:
             print('Error on recieving points')
             print(e)
@@ -234,7 +235,7 @@ def render():
 
         name = request.form['name']
         
-        settings = plot_voxel_points(voxels, np.asarray(points), filename=name)
+        settings = plot_voxel_points(voxels, np.asarray(pointcloud), filename=name)
 
         return APP.response_class(
             response=json.dumps(settings),

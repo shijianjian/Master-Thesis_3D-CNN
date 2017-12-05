@@ -1,8 +1,5 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { MatSliderModule } from '@angular/material/slider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,6 +10,7 @@ import { SegmentationListComponent } from "./segmentation-list.component";
 import { CameraModule } from "../camera/camera.module";
 import { SegPredictionComponent } from "./seg-prediction.component";
 import { ModelSelectorComponent } from "./model-selector.component";
+import { ClusterAlgorithmModule } from "./clusters/cluster-algorithm.module";
 
 @NgModule({
     declarations: [
@@ -25,12 +23,10 @@ import { ModelSelectorComponent } from "./model-selector.component";
       BrowserModule,
       FormsModule,
       ReactiveFormsModule,
-      MatSliderModule,
-      MatFormFieldModule,
-      MatInputModule,
       MatPaginatorModule,
       MatProgressSpinnerModule,
       MatSelectModule,
+      ClusterAlgorithmModule,
       CameraModule
     ],
     exports: [

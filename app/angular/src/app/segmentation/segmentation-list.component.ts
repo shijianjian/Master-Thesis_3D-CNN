@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, DoCheck } from '@angular/core';
 import { PageEvent } from '@angular/material';
 
-import { PointsGroup } from '../model/pointsGroup';
+import { PointsSettings } from '../model/points-settings';
 
 @Component({
   selector: 'app-segmentation-list',
@@ -20,9 +20,9 @@ export class SegmentationListComponent implements DoCheck {
 
   currentItemIndex = 1;
 
-  selectedSegments: Array<PointsGroup> = [];
+  selectedSegments: Array<PointsSettings> = [];
 
-  @Input() segments: Array<PointsGroup>;
+  @Input() segments: Array<PointsSettings>;
 
   running: boolean = false;
 

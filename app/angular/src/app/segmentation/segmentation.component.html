@@ -1,35 +1,18 @@
-<div style="display:flex; justify-content:space-between;">
-    <mat-slider 
-        style="width:300px;"
-        [step]= "epsilon_step"
-        [max]="epsilon_max"
-        [min]="epsilon_min"
-        [(ngModel)]="epsilon"></mat-slider>
-    <mat-form-field style="width: 70px;">
-        <input matInput type="number" 
-            [step]= "epsilon_step" 
-            [formControl]="epsilonControll" 
-            placeholder="Epsilon" 
-            [(ngModel)]="epsilon">
-        <mat-error *ngIf="epsilonControll.invalid">Invalid</mat-error>
-    </mat-form-field>
-</div>
-
-<div style="display:flex; justify-content:space-between;">
-    <mat-slider 
-        style="width:300px;"
-        [step]= "points_step"
-        [max]="max_points"
-        [min]="min_points"
-        [(ngModel)]="points"></mat-slider>
-    <mat-form-field style="width: 70px;">
-        <input matInput type="number" 
-            [step]= "points_step" 
-            [formControl]="pointsControll" 
-            placeholder="Min Points" 
-            [(ngModel)]="points">
-        <mat-error *ngIf="pointsControll.invalid">Invalid</mat-error>
-    </mat-form-field>
-</div>
-
-<input class="btn btn-outline-primary" style="float:right;" type="button" value="Segment" (click)="segment()"/>
+<mat-form-field>
+    <mat-select
+        placeholder="Select Cluster Algorithm"
+        (selectionChange)="onSelected($event)"
+        [(value)]="selected">
+        <mat-option *ngFor="let model of models" [value]="model">
+        {{ model }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+<app-cluster-form #clusterForm></app-cluster-form>
+<input 
+    *ngIf="selected && clusterForm.form.valid" 
+    (click)="segment()" 
+    class="btn btn-outline-primary" 
+    style="float:right;" 
+    type="button" 
+    value="Segment"/>

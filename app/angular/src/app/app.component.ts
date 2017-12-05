@@ -3,8 +3,7 @@ import { FileUploader } from 'ng2-file-upload/ng2-file-upload';
 
 import { AppService } from './app.service';
 import { baseUrl } from './settings';
-import { CameraSettings } from './model/camera-settings';
-import { PointsGroup } from './model/pointsGroup';
+import { CameraSettings, PointsSettings } from './model/points-settings';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +24,7 @@ export class AppComponent {
   filename: string;
 
   pointcloud: Array<Array<number>>;
-  segs: Array<PointsGroup> = [];
+  segs: Array<PointsSettings> = [];
   cameraSettings: CameraSettings;
 
   @HostBinding('class.container') cont: boolean = true;
