@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { CameraComponent } from './camera.component';
 
@@ -8,7 +9,8 @@ import { CameraComponent } from './camera.component';
     CameraComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    MatTabsModule
   ],
   exports: [
     CameraComponent

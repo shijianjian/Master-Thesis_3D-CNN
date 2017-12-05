@@ -2,9 +2,10 @@ import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@ang
 import { MeshBasicMaterialParameters, MeshBasicMaterial, PointsMaterial,
     Color, Camera, Material, BoxGeometry, Points, Object3D, Mesh } from 'three';
 
-import { CameraSettings } from '../model/points-settings';
+import { CameraSettings, VoxelPointsViews } from '../model/points-settings';
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
+import { MatTabChangeEvent } from '@angular/material';
 
 declare const THREE;
 declare const PLYLoader;
@@ -16,10 +17,11 @@ declare const OrbitControls;
 })
 export class CameraComponent implements OnChanges {
 
-    @Input() settings: CameraSettings;
+    @Input() settings: VoxelPointsViews;
 
     renderer: THREE.WebGLRenderer;
     figure: Points | Mesh;
+    scene : THREE.Scene = new THREE.Scene();
 
     @ViewChild('canvas')
     private canvasRef: ElementRef;
@@ -46,13 +48,35 @@ export class CameraComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        this.onRender();
+        if (this.scene.children.length > 0) {
+            this.removeAll();
+        }
+        if (this.settings) {
+            this.onRender(this.settings.pointcloud);
+        };
     }
 
-    private onRender() {
-        if (typeof this.settings =='undefined')
+    onSelectionChanged(event: MatTabChangeEvent) {
+        this.removeAll();
+        if (this.settings && event.index == 0) {
+            // Point Cloud
+            this.onRender(this.settings.pointcloud);
+        } else if (this.settings && event.index == 1) {
+            // Voxel Grid
+            this.onRender(this.settings.voxelgrid);
+        }
+    }
+
+    private removeAll() {
+        while (this.scene.children.length){
+            this.scene.remove(this.scene.children[0]);
+        }
+    }
+
+    private onRender(settings: CameraSettings) {
+        if (typeof settings =='undefined')
             return;
-        let cameraSettings = this.processProperties(this.settings);
+        let cameraSettings = this.processProperties(settings);
         let camera = this.buildCamera(cameraSettings);
         this.init(cameraSettings, camera);
     }
@@ -116,13 +140,24 @@ export class CameraComponent implements OnChanges {
     }
 
     private init(cameraSettings: CameraSettings, camera: THREE.PerspectiveCamera) {
-        let scene: THREE.Scene = new THREE.Scene();; 
 
         if (cameraSettings.AXIS_SIZE > 0) {
             let axisHelper = new THREE.AxisHelper(cameraSettings.AXIS_SIZE);
-            scene.add(axisHelper);
+            this.scene.add(axisHelper);
         }
 
+        if (cameraSettings.N_VOXELS > 0) {
+            // Voxel Grid Renderer
+            this.addVoxelToScene(this.scene, cameraSettings, camera);
+        }
+
+        // Point Cloud Renderer
+        if (cameraSettings.FILENAME) {
+            this.addPointsToScene(this.scene, cameraSettings, camera);
+        }
+    }
+
+    private addVoxelToScene(scene: THREE.Scene, cameraSettings: CameraSettings, camera: THREE.PerspectiveCamera) {
         let geometry: THREE.BoxGeometry = new THREE.BoxGeometry(
             cameraSettings.S_x, 
             cameraSettings.S_y, 
@@ -148,11 +183,20 @@ export class CameraComponent implements OnChanges {
             mesh.position.z = cameraSettings.POINTS_Z[i];
             scene.add(mesh);
         }
+        let controls = this.initControl(cameraSettings, camera);
+        controls.addEventListener('change', (event) => {
+            this.render(scene, camera)
+        });
+        // fix async
+        this.animate(scene, camera);
+    }
 
-        // Point Cloud Renderer
+    private addPointsToScene(scene: THREE.Scene, cameraSettings: CameraSettings, camera: THREE.PerspectiveCamera) {
         let filename = cameraSettings.FILENAME;
-        
-        let material: THREE.Material;
+        if (!filename) {
+            console.error("No .ply filename provided");
+            return;
+        }
         let loader = new THREE.PLYLoader();
         loader.load(filename, (geometry) => {
             if (geometry.index) {
@@ -174,7 +218,6 @@ export class CameraComponent implements OnChanges {
             // fix async
             this.animate(scene, camera);
         });
-
     }
 
     private loadPointsPLY(geometry): Points {

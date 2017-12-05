@@ -80,39 +80,7 @@ def voxelize3D(pts, dim=[1,1,1]):
     assert(len(dim)==3), "Please provide 3-d grid size like [32,32,32]"
     
     if len(pts) > 1:
-        # move all the axis to positive area.
-        # minimum_val = [pts[0][0], pts[0][1], pts[0][2]]
-
-        # # find the smallest 
-        # for pair in pts:
-        #     if pair[0] < minimum_val[0]:
-        #         minimum_val[0] = pair[0]
-        #     if pair[1] < minimum_val[1]:
-        #         minimum_val[1] = pair[1]
-        #     if pair[2] < minimum_val[2]:
-        #         minimum_val[2] = pair[2]
-
-        # # move it to first quadrant 
-        # rectified_pts = np.empty(pts.shape)
-        # for index, pair in enumerate(pts):
-        #     point = np.zeros(3)
-        #     point[0] = pair[0] - minimum_val[0]
-        #     point[1] = pair[1] - minimum_val[1]
-        #     point[2] = pair[2] - minimum_val[2]
-        #     rectified_pts[index] = point
-
-        # # biggest value in each axis 
-        # maximum_val = pts[0][0]
-
-        # for pair in rectified_pts:
-        #     for val in pair:
-        #         if val > maximum_val:
-        #             maximum_val = val
-
-        # normalize all the axises to (0,1)
-        # normalized_pts = rectified_pts/maximum_val
         normalized_pts = norm_point(pts)
-    
     else:
         # in case there is just one point
         normalized_pts = pts
@@ -141,5 +109,5 @@ def voxelize3D(pts, dim=[1,1,1]):
             max_volume_size = output[x_loc, y_loc, z_loc]
     
     output = output/max_volume_size    
-            
+
     return output

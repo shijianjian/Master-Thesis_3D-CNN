@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pyntcloud import PyntCloud
 
-from cnn.util.process_pointcloud import find_ranges, norm_point
+from cnn.util.process_pointcloud import norm_point
 
 def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="Oranges", axis=True):
     """
@@ -20,7 +20,7 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
     axis_size = 0
     if voxelgrid is not None:
         # For Voxel Grid
-        scaled_shape = voxelgrid.shape
+        # scaled_shape = voxelgrid.shape
 
         vector = voxelgrid
         points = np.argwhere(vector)
@@ -34,7 +34,10 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
 
         if axis:
             axis_size = points.ptp() * 1.5
-            
+            axis_size = axis_size.tolist()
+        
+        camera_position = camera_position.tolist()
+        look = look.tolist()
     
     if point_cloud is not None:
         httppath = os.path.join('uploads', "{}.ply".format(filename))
@@ -51,7 +54,7 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
 
         cloud = PyntCloud(points_df)
         cloud.to_file(filepath, also_save=["mesh"])
-        
+
         if voxelgrid is None:
             camera_position = (point_cloud.max(0) + abs(point_cloud.max(0))).tolist()
             look = cloud.xyz.mean(0).tolist()
@@ -63,7 +66,6 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
         placeholders["POINTS_Y"] = points[:, 1].tolist()
         placeholders["POINTS_Z"] = points[:, 2].tolist()
 
-    if voxelgrid is not None:
         placeholders["R"] = rgb[:, 0].tolist()
         placeholders["G"] = rgb[:, 1].tolist()
         placeholders["B"] = rgb[:, 2].tolist()
@@ -83,7 +85,7 @@ def plot_voxel_points(voxelgrid, point_cloud, filename='pyntcloud_plot', cmap="O
     placeholders["AXIS_SIZE"] = axis_size
 
     if voxelgrid is not None:
-        placeholders["N_VOXELS"] = sum(vector.reshape(-1) > 0)
+        placeholders["N_VOXELS"] = sum(vector.reshape(-1) > 0).tolist()
 
     if point_cloud is not None:
         placeholders["FILENAME"] = str(httppath)

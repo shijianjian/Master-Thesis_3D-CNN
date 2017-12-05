@@ -59,7 +59,7 @@ export class SegmentationComponent {
           let segs: PointsSettings[] = [];
           let dict = data.json();
           for(let key in dict) {
-            this.$appService.getCameraSettings(dict[key], undefined, `${this.filename}_${key}`).subscribe(
+            this.$appService.getCameraSettings(dict[key], `${this.filename}_${key}`, 32).subscribe(
               csetting => {
                 segs.push({
                   points: dict[key],

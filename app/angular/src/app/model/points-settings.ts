@@ -1,8 +1,13 @@
 
 export interface PointsSettings {
     points: number[][];
-    camera: CameraSettings;
+    camera: VoxelPointsViews;
     result?: string;
+}
+
+export interface VoxelPointsViews {
+    pointcloud: CameraSettings;
+    voxelgrid: CameraSettings;
 }
 
 export interface CameraSettings {

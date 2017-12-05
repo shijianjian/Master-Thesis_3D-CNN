@@ -99,6 +99,7 @@ def cluster_point_cloud():
             mimetype='application/json'
         )
 
+
 @APP.route('/plot/points/<path:filename>', methods=['GET'])
 @cross_origin()
 def get_points(filename):
@@ -226,29 +227,34 @@ def render():
     points: recives XYZ coordinates.
     """
     if request.method == 'POST':
-        pointcloud = None
-        voxels = None
+        import ast
+
+        # convert string to 2d numpy array
+        pointcloud = request.form['pointcloud']
+        pointcloud = ast.literal_eval(pointcloud)
+        normalized_cloud = np.asarray(norm_point(pointcloud))
+
+        voxels_plots = None
+        name = None
+        grid_size = None
         try:
-            # convert string to 2d numpy array
-            pointcloud = request.form['pointcloud']
-            import ast
-            pointcloud = ast.literal_eval(pointcloud)
+            name = request.form['name']
+            grid_size = request.form['grid_size']
         except Exception as e:
-            print('Error on recieving points')
             print(e)
 
-        try:
-            voxels = request.form['voxels']
-        except Exception as e:
-            print('Error on recieving voxels')
-            print(e)
-
-        name = request.form['name']
+        if grid_size is not None:
+            grid_size = ast.literal_eval(grid_size)
+            voxels = voxelize3D(normalized_cloud, dim=[grid_size[0],grid_size[1], grid_size[2]])
+            voxels_plots = plot_voxel_points(voxels, None, filename=None)
         
-        settings = plot_voxel_points(voxels, np.asarray(pointcloud), filename=name)
+        res = {
+            'pointcloud': plot_voxel_points(None, normalized_cloud, filename=name),
+            'voxelgrid': voxels_plots
+        }
 
         return APP.response_class(
-            response=json.dumps(settings),
+            response=json.dumps(res),
             status=200,
             mimetype='application/json'
         )

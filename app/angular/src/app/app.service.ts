@@ -5,7 +5,7 @@ import { Observable } from "rxjs/Observable";
 import { map } from 'rxjs/operators';
 
 import { baseUrl } from "./settings";
-import { CameraSettings } from "./model/points-settings";
+import { VoxelPointsViews } from "./model/points-settings";
 import { ClusterSettings, DBSCAN, MeanShift, ClusterAlgorithms } from "./model/cluster-algorithm";
 import { Subject, BehaviorSubject } from "rxjs";
 
@@ -34,17 +34,16 @@ export class AppService {
         return this._http.get(`${baseUrl}/plot/points/${filename}`);
     }
 
-    getCameraSettings(pointcloud: Array<Array<number>>, voxels, name): Observable<CameraSettings> {
-        if ((typeof pointcloud == 'undefined' 
-            && typeof voxels == 'undefined')
-            && typeof name != 'undefined') {
-            throw new TypeError("Invalid Input, please provide points or voxels. name is not allowed to be 'undefined'"); 
+    getCameraSettings(pointcloud: Array<Array<number>>, name?: string, gridSize?: number): Observable<VoxelPointsViews> {
+        if (typeof pointcloud != 'undefined'
+            && typeof name == 'undefined') {
+            throw new TypeError("Invalid Input, please provide a file name for point cloud data"); 
         }
         let body = new FormData();
         body.append('name', name);
         typeof pointcloud != 'undefined' ? body.append('pointcloud', JSON.stringify(pointcloud)) : null;
-        typeof voxels != 'undefined' ? body.append('voxels', voxels) : null;
-        return this._httpClient.post<CameraSettings>(`${baseUrl}/plot/settings`, body);
+        typeof gridSize != 'undefined' ? body.append('grid_size', `[${gridSize}, ${gridSize}, ${gridSize}]`) : null;
+        return this._httpClient.post<VoxelPointsViews>(`${baseUrl}/plot/settings`, body);
     }
 
     predict(pointcloud: number[][], model: string): Observable<Response>  {
