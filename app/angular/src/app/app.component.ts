@@ -3,7 +3,6 @@ import { FileUploader } from 'ng2-file-upload/ng2-file-upload';
 
 import { AppService } from './app.service';
 import { baseUrl } from './settings';
-import { PointsSettings, VoxelPointsViews } from './model/points-settings';
 
 @Component({
   selector: 'app-root',
@@ -24,8 +23,7 @@ export class AppComponent {
   filename: string;
 
   pointcloud: Array<Array<number>>;
-  segs: Array<PointsSettings> = [];
-  cameraSettings: VoxelPointsViews;
+  segs: Array<number[][]> = [];
 
   @HostBinding('class.container') cont: boolean = true;
 
@@ -59,11 +57,6 @@ export class AppComponent {
       this.$appService.getPoints(this.filename).subscribe(
         data => {
           this.pointcloud = data.json();
-          this.$appService.getCameraSettings(this.pointcloud, this.filename, 32).subscribe(
-            data => {
-              this.cameraSettings = data;
-            }
-          )
         }
       )
     });
@@ -76,8 +69,12 @@ export class AppComponent {
     }
   }
 
-  onSegments(event: PointsSettings[]) {
-    this.segs = Array.from(event);
+  onSegments(event: JSON) {
+    let segs = []
+    for (let key in event) {
+      segs.push(event[key]);
+    }
+    this.segs = segs;
   }
 
 }

@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter} from '@angular/core';
-import { PointsSettings } from '../model/points-settings';
 
 import { AppService } from '../app.service';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -16,10 +15,11 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class SegPredictionComponent implements OnInit {
 
-    @Input() seg: PointsSettings;
+    @Input() seg: number[][];
     @Output() prediction = new EventEmitter<string>();
     running: boolean = false;
     private model: string;
+    result: string;
 
     constructor(private $appService: AppService) {}
 
@@ -30,7 +30,7 @@ export class SegPredictionComponent implements OnInit {
     predict(points: number[][]) {
         this.running = true;
         this.$appService.predict(points, this.model).subscribe((data) => {
-            this.prediction.emit(data.json());
+            this.result = data.json();
             this.running = false;
         })
     }

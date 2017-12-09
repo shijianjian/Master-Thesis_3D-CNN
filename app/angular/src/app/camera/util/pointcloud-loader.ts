@@ -2,7 +2,7 @@ import * as nj from 'numjs';
 
 declare const THREE;
 
-import { CameraParams, VisualSettings } from '../../model/visual-settings'
+import { CameraParams } from '../../model/visual-settings'
 
 class ThreeDLoader {
 
@@ -96,14 +96,34 @@ export class PointCloudLoader extends ThreeDLoader {
 export class VoxelGridLoader extends ThreeDLoader {
 
     static calculate(voxelgrid: number[][][]): CameraParams {
+        let points = this.argwhere(voxelgrid);
         return {
-            position_x: voxelgrid.length * 2,
-            position_y: voxelgrid[0].length * 2,
-            position_z: voxelgrid[0][0].length * 2,
-            look_x: voxelgrid.length / 2,
-            look_y: voxelgrid[0].length / 2,
-            look_z: voxelgrid[0][0].length / 2
+            position_x: nj.max(points[0]) + Math.abs(nj.max(points[0])),
+            position_y: nj.max(points[1]) + Math.abs(nj.max(points[1])),
+            position_z: nj.max(points[2]) + Math.abs(nj.max(points[2])),
+            look_x: nj.mean(points[0]),
+            look_y: nj.mean(points[1]),
+            look_z: nj.mean(points[2])
         }
+    }
+
+    private static argwhere(voxelgrid: number[][][]) {
+        let x_idx = [],
+            y_idx = [],
+            z_idx = [];
+        for (let i = 0; i < voxelgrid.length; i++) {
+            for (let j = 0; j < voxelgrid[i].length; j++) {
+                for (let k = 0; k < voxelgrid[i][j].length; k++) {
+                    if (voxelgrid[i][j][k] == 0) {
+                        continue;
+                    }
+                    x_idx.push(i);
+                    y_idx.push(j);
+                    z_idx.push(k);
+                }
+            }
+        }
+        return [x_idx, y_idx, z_idx];
     }
 
     static loadMesh(geometry: THREE.Geometry, meshBasicMaterial?: THREE.MeshBasicMaterial): THREE.Mesh {

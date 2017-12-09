@@ -1,8 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { PageEvent } from '@angular/material';
 
-import { PointsSettings } from '../model/points-settings';
-
 @Component({
   selector: 'app-segmentation-list',
   templateUrl: './segmentation-list.component.html',
@@ -20,9 +18,9 @@ export class SegmentationListComponent implements OnChanges {
 
   currentItemIndex = 1;
 
-  selectedSegments: Array<PointsSettings> = [];
+  selectedSegments: Array<number[][]> = [];
 
-  @Input() segments: Array<PointsSettings>;
+  @Input() segments: Array<number[][]> = [];
 
   running: boolean = false;
 

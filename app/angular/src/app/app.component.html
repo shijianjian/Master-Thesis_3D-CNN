@@ -10,8 +10,7 @@
     <app-camera-native class="app-container-inline" [pointcloud]="pointcloud"></app-camera-native>
     <app-segmentation 
         *ngIf="filename"
-        [pointcloud]="pointcloud" 
-        [filename]="filename" 
+        [pointcloud]="pointcloud"
         (segments)="onSegments($event)"
     ></app-segmentation>
 </div>

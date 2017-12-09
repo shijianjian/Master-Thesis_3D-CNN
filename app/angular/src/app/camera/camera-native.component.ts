@@ -1,7 +1,6 @@
 import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
 import { MeshBasicMaterial, PointsMaterial, Points, Mesh } from 'three';
 
-import { CameraSettings, VoxelPointsViews } from '../model/points-settings';
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
 import { MatTabChangeEvent } from '@angular/material';
@@ -14,7 +13,7 @@ declare const OrbitControls;
 
 @Component({
   selector: 'app-camera-native',
-  templateUrl: './camera.component.html'
+  templateUrl: './camera-native.component.html'
 })
 export class CameraNativeComponent implements OnChanges {
 
@@ -47,13 +46,12 @@ export class CameraNativeComponent implements OnChanges {
         })
     }
 
-    ngOnInit() {
-        this.renderer = PointCloudLoader.initRender(this.canvas);
-    }
-
     ngOnChanges() {
         if (!this.pointcloud) {
             return;
+        }
+        if (!this.renderer) {
+            this.renderer = PointCloudLoader.initRender(this.canvas);
         }
         if (this.scene.children.length > 0) {
             this.removeAll();

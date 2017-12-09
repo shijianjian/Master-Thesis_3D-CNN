@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
 
 import { AppService } from '../app.service';
-import { PointsSettings } from '../model/points-settings';
 import { Algorithm, DBSCAN, MeanShift, KMeans } from '../model/cluster-algorithm';
 import { ClusterFormComponent } from './clusters/cluster-form.component';
 
@@ -20,9 +19,8 @@ import { ClusterFormComponent } from './clusters/cluster-form.component';
 export class SegmentationComponent {
 
     @Input() pointcloud: number[][];
-    @Input() filename: string;
 
-    @Output() segments = new EventEmitter<PointsSettings[]>();
+    @Output() segments = new EventEmitter<JSON>();
 
     @ViewChild('clusterForm') clusterForm: ClusterFormComponent
 
@@ -61,21 +59,8 @@ export class SegmentationComponent {
     segment() {
       let settings = this.settings;
       this.$appService.getClusters(this.pointcloud, settings, Algorithm.Cluster.Names[this.selected]).subscribe(data => {
-          let segs: PointsSettings[] = [];
-          let dict = data.json();
-          for(let key in dict) {
-            this.$appService.getCameraSettings(dict[key], `${this.filename}_${key}`, 32).subscribe(
-              csetting => {
-                segs.push({
-                  points: dict[key],
-                  camera: csetting
-                })
-                if (Object.keys(dict).length == segs.length) {
-                  this.segments.emit(segs);
-                }
-              }
-            )
-          }
+          let dict: JSON = data.json();
+          this.segments.emit(dict);
         }
       )
     }
