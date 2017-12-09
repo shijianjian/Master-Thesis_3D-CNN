@@ -10,7 +10,10 @@ import { MatTabChangeEvent } from '@angular/material';
 declare const THREE;
 declare const PLYLoader;
 declare const OrbitControls;
-
+/**
+ * @deprecated
+ * This class requires read .ply files which is not efficient enough.
+ */
 @Component({
   selector: 'app-camera',
   templateUrl: './camera.component.html'

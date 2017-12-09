@@ -6,8 +6,8 @@
         </div>
         <app-model-selector></app-model-selector>
     </div>
-    <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera>
-    
+    <!-- <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera> -->
+    <app-camera-native class="app-container-inline" [pointcloud]="pointcloud"></app-camera-native>
     <app-segmentation 
         *ngIf="filename"
         [pointcloud]="pointcloud" 

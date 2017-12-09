@@ -3,17 +3,20 @@ import { NgModule } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { CameraComponent } from './camera.component';
+import { CameraNativeComponent } from './camera-native.component';
 
 @NgModule({
   declarations: [
-    CameraComponent
+    CameraComponent,
+    CameraNativeComponent
   ],
   imports: [
     BrowserModule,
     MatTabsModule
   ],
   exports: [
-    CameraComponent
+    CameraComponent,
+    CameraNativeComponent
   ],
   providers: [
   ]
