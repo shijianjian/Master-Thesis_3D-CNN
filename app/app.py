@@ -9,7 +9,7 @@ from flask import Flask, json, render_template, send_from_directory, request, re
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 
-from cnn.util.cluster import dbscan_labels, mean_shift_labels, find_cluster_points
+from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.plot.camera_config import plot_voxel_points
 from cnn.prediction import predict
@@ -78,13 +78,25 @@ def cluster_point_cloud():
 
         if cluster_algorithm == 'dbscan':
             eps = float(request.form['epsilon'])
-            min_points = float(request.form['minPoints'])
+            min_points = int(request.form['minPoints'])
             algorithm = request.form['algorithm']
             labels = dbscan_labels(normalized_cloud, eps, min_points, algorithm=algorithm)
         elif cluster_algorithm == 'mean_shift':
             bandwidth = float(request.form['bandwidth'])
-            max_iter = float(request.form['max_iter'])
-            labels = mean_shift_labels(normalized_cloud, bandwidth=bandwidth, max_iter=max_iter, n_jobs=4)
+            max_iter = int(request.form['max_iter'])
+            labels = mean_shift_labels(normalized_cloud, bandwidth=bandwidth, 
+                                       max_iter=max_iter, n_jobs=4)
+        elif cluster_algorithm == 'kmeans':
+            n_clusters = int(request.form['n_clusters'])
+            init = request.form['init']
+            precompute_distances = request.form['precompute_distances']
+            algorithm = request.form['algorithm']
+            max_iter = int(request.form['max_iter'])
+            labels = k_means_label(normalized_cloud, n_clusters=n_clusters, init=init,
+                                   precompute_distances=precompute_distances, algorithm=algorithm,
+                                   max_iter=max_iter, n_jobs=4)
+        else:
+            raise TypeError("Not supported method.")
 
         cluster = find_cluster_points(normalized_cloud, labels)
         return APP.response_class(

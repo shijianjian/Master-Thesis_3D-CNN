@@ -4,7 +4,7 @@ import { MatSelectChange } from '@angular/material';
 
 import { AppService } from '../app.service';
 import { PointsSettings } from '../model/points-settings';
-import { ClusterAlgorithms, ClusterSettings, DBSCANAlgorithm, DBSCAN, MeanShift } from '../model/cluster-algorithm';
+import { Algorithm, DBSCAN, MeanShift, KMeans } from '../model/cluster-algorithm';
 import { ClusterFormComponent } from './clusters/cluster-form.component';
 
 @Component({
@@ -32,30 +32,35 @@ export class SegmentationComponent {
     constructor(
       private $appService: AppService
     ) {
-      this.models = Object.keys(ClusterAlgorithms).filter(key => typeof ClusterAlgorithms[key] == 'string');
+      this.models = Object.keys(Algorithm.Cluster.Names)
+                          .filter(key => typeof Algorithm.Cluster.Names[key] == 'string');
     }
 
     onSelected(e: MatSelectChange) {
-      this.selected = ClusterAlgorithms[e.value];
-      this.clusterForm.onChangeAlgorithm(ClusterAlgorithms[e.value]);
+      this.selected = Algorithm.Cluster.Names[e.value];
+      this.clusterForm.onChangeAlgorithm(Algorithm.Cluster.Names[e.value]);
     }
 
-    private get settings(): ClusterSettings {
+    private get settings(): Algorithm.Cluster.Output {
       let settings = {};
       for (let key in this.clusterForm.form.controls) {
         settings[key] = this.clusterForm.form.controls[key].value;
       }
-      switch (ClusterAlgorithms[this.selected]) {
-        case ClusterAlgorithms.DBSCAN:
-          return { cluster: (settings as DBSCAN) };
-        case ClusterAlgorithms.MEANSHIFT:
-          return { cluster: (settings as MeanShift) }
+      switch (Algorithm.Cluster.Names[this.selected]) {
+        case Algorithm.Cluster.Names.DBSCAN:
+          return { cluster: (settings as DBSCAN.Fields) };
+        case Algorithm.Cluster.Names.MEANSHIFT:
+          return { cluster: (settings as MeanShift.Fields) };
+        case Algorithm.Cluster.Names.KMEANS:
+          return { cluster: (settings as KMeans.Fields) };
+        default:
+          throw TypeError("Not implemented");
       }
     }
 
     segment() {
       let settings = this.settings;
-      this.$appService.getClusters(this.pointcloud, settings, ClusterAlgorithms[this.selected]).subscribe(data => {
+      this.$appService.getClusters(this.pointcloud, settings, Algorithm.Cluster.Names[this.selected]).subscribe(data => {
           let segs: PointsSettings[] = [];
           let dict = data.json();
           for(let key in dict) {

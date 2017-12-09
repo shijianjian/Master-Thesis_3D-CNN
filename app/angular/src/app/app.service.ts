@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { baseUrl } from "./settings";
 import { VoxelPointsViews } from "./model/points-settings";
-import { ClusterSettings, DBSCAN, MeanShift, ClusterAlgorithms } from "./model/cluster-algorithm";
+import { Algorithm, DBSCAN, MeanShift } from "./model/cluster-algorithm";
 import { Subject, BehaviorSubject } from "rxjs";
 
 @Injectable()
@@ -16,7 +16,7 @@ export class AppService {
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
-    getClusters(pointcloud: number[][], clusterSettings: ClusterSettings, clusterAlgorithm: ClusterAlgorithms): Observable<Response> {
+    getClusters(pointcloud: number[][], clusterSettings: Algorithm.Cluster.Output, clusterAlgorithm: Algorithm.Cluster.Names): Observable<Response> {
         let body = new FormData();
         if (typeof pointcloud != 'undefined' 
             && typeof clusterSettings != 'undefined') {
