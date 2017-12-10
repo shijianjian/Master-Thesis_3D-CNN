@@ -1,10 +1,10 @@
 <ng-container *ngIf="segments.length > 0">
     <div class="seg-display">
-        <div *ngFor="let seg of selectedSegments; let i = index;">
-            <app-camera-native 
-                style="width: 28vw; height:25vh; padding: 5px;" 
+        <div style="padding: 5px;" *ngFor="let seg of selectedSegments; let i = index;">
+            <app-camera-featured 
+                style="width: 28vw; height:25vh;" 
                 class="app-container-inline" 
-                [pointcloud]="seg"></app-camera-native>
+                [pointcloud]="seg"></app-camera-featured>
             <app-seg-prediction [seg]="seg"></app-seg-prediction>
         </div>
     </div>

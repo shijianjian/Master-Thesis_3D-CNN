@@ -3,7 +3,6 @@ import { MeshBasicMaterial, PointsMaterial, Points, Mesh } from 'three';
 
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
-import { MatTabChangeEvent } from '@angular/material';
 import { PointCloudLoader, VoxelGridLoader } from './util/pointcloud-loader';
 import { CameraParams } from '../model/visual-settings';
 
@@ -17,8 +16,7 @@ declare const OrbitControls;
 })
 export class CameraNativeComponent implements OnChanges {
 
-    @Input() pointcloud: number[][];
-    voxelgrid: number[][][];
+    @Input() data: number[][] | number[][][];
 
     renderer: THREE.WebGLRenderer;
     figure: Points | Mesh[];
@@ -47,31 +45,16 @@ export class CameraNativeComponent implements OnChanges {
     }
 
     ngOnChanges() {
-        if (!this.pointcloud) {
-            return;
-        }
         if (!this.renderer) {
             this.renderer = PointCloudLoader.initRender(this.canvas);
         }
+        if (!this.data) {
+            return;
+        }
         if (this.scene.children.length > 0) {
             this.removeAll();
-            this.voxelgrid = undefined;
         }
-        this.onRender(this.pointcloud);
-    }
-
-    onSelectionChanged(event: MatTabChangeEvent) {
-        this.removeAll();
-        if (this.pointcloud && event.index == 0) {
-            // Point Cloud
-            this.onRender(this.pointcloud);
-        } else if (this.pointcloud && event.index == 1) {
-            // Voxel Grid
-            if(!this.voxelgrid) {
-                this.voxelgrid = VoxelGridLoader.voxelize(this.pointcloud);
-            }
-            this.onRender(this.voxelgrid);
-        }
+        this.onRender(this.data);
     }
 
     private removeAll() {
@@ -81,11 +64,14 @@ export class CameraNativeComponent implements OnChanges {
     }
 
     private onRender(data: number[][] | number[][][]) {
-        if (data && typeof data[0][0] == 'number') {
+        if (!data || !data[0]) {
+            return;
+        }
+        if (typeof data[0][0] == 'number') {
             let cameraSettings = PointCloudLoader.calculate((data as number[][]));
             let camera = PointCloudLoader.buildCamera(this.canvas, cameraSettings);
             this.init(cameraSettings, camera, (data as number[][]));
-        } else if (data && typeof data[0][0][0] == 'number') {
+        } else if (data[0][0] && typeof data[0][0][0] == 'number') {
             let cameraSettings = VoxelGridLoader.calculate((data as number[][][]));
             let camera = VoxelGridLoader.buildCamera(this.canvas, cameraSettings);
             this.init(cameraSettings, camera, (data as number[][][]));
@@ -94,7 +80,7 @@ export class CameraNativeComponent implements OnChanges {
         }
     }
 
-    private get canvas(): HTMLCanvasElement {
+    get canvas(): HTMLCanvasElement {
         return this.canvasRef.nativeElement;
     }
 

@@ -1,0 +1,15 @@
+<div #parent>
+    <div #camera>
+        <mat-tab-group (selectedTabChange)="onSelectionChanged($event)">
+            <mat-tab label="Point Cloud"></mat-tab>
+            <mat-tab label="Voxel Grid"></mat-tab>
+        </mat-tab-group>
+        <app-camera-native [data]="data"></app-camera-native>
+    </div>
+</div>
+<app-camera-dialog-viewer 
+    [style.opacity]="iconOpacity()"
+    (click)="onView()"
+    class="corner-icon" 
+    [element]="element"
+    (outputElement)="onOutputElement($event)"></app-camera-dialog-viewer>

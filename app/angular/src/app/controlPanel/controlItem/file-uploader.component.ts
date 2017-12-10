@@ -10,7 +10,7 @@ import { baseUrl } from './../../settings';
     templateUrl: './file-uploader.component.html',
     styles: [`
       :host {
-        display: inline-block;
+        display: block;
       }
     `]
 })

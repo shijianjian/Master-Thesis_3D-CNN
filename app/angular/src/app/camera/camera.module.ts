@@ -1,19 +1,30 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule, MatDialogModule, MatIconModule } from '@angular/material';
 
 import { CameraNativeComponent } from './camera-native.component';
+import { CameraFeaturedComponent } from './camera-featured.component';
+import { CameraDialogComponent } from './camera-dialog.componnet';
+import { CameraDialogViewerComponent } from './camera-dialog-viewer.component';
 
 @NgModule({
   declarations: [
-    CameraNativeComponent
+    CameraNativeComponent,
+    CameraFeaturedComponent,
+    CameraDialogComponent,
+    CameraDialogViewerComponent
   ],
   imports: [
     BrowserModule,
-    MatTabsModule
+    MatTabsModule,
+    MatDialogModule,
+    MatIconModule
   ],
   exports: [
-    CameraNativeComponent
+    CameraFeaturedComponent
+  ],
+  entryComponents: [
+    CameraDialogComponent
   ],
   providers: [
   ]

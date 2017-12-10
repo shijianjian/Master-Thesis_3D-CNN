@@ -15,6 +15,7 @@ import { Algorithm } from "../model/cluster-algorithm";
             padding: 5px;
             width: 100%;
             height:100%;
+            margin-bottom: 10px;
             box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
         }
     `]

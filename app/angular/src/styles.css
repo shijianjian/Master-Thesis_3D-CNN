@@ -10,3 +10,15 @@ html, body {
 .app-container-inline {
     display: inline-block;
 }
+
+.corner-icon {
+    position: absolute;
+    right:3%;
+    top:5%;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+mat-dialog-container {
+    position: relative;
+}
