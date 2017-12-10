@@ -18,13 +18,22 @@ export class SegPredictionComponent implements OnInit {
     @Input() seg: number[][];
     @Output() prediction = new EventEmitter<string>();
     running: boolean = false;
-    private model: string;
     result: string;
+    disableBtn: boolean = true;
+
+    private model: string;
 
     constructor(private $appService: AppService) {}
 
     ngOnInit() {
-      this.$appService.selectedModel.subscribe(model => this.model = model)
+      this.$appService.selectedModel.subscribe(model => {
+        if (model == null || typeof model == 'undefined') {
+          this.disableBtn = true;
+        } else {
+          this.disableBtn = false;
+        }
+        this.model = model;
+      })
     }
     
     predict(points: number[][]) {

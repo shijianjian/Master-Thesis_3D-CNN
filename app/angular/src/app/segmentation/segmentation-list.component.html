@@ -1,10 +1,13 @@
 <ng-container *ngIf="segments.length > 0">
-    <div>Segmentations:</div>
-    <ng-container *ngFor="let seg of selectedSegments; let i = index;">
-        <app-camera-native style="min-height:25vh;" class="app-container-inline" [pointcloud]="seg"></app-camera-native>
-        <app-seg-prediction [seg]="seg"></app-seg-prediction>
-    </ng-container>
-
+    <div class="seg-display">
+        <div *ngFor="let seg of selectedSegments; let i = index;">
+            <app-camera-native 
+                style="width: 28vw; height:25vh; padding: 5px;" 
+                class="app-container-inline" 
+                [pointcloud]="seg"></app-camera-native>
+            <app-seg-prediction [seg]="seg"></app-seg-prediction>
+        </div>
+    </div>
     <mat-paginator 
         [length]="segments.length"
         [pageSize]="pageSize"

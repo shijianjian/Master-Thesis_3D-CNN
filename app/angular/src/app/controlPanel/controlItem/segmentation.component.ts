@@ -2,9 +2,9 @@ import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
 
-import { AppService } from '../app.service';
-import { Algorithm, DBSCAN, MeanShift, KMeans } from '../model/cluster-algorithm';
-import { ClusterFormComponent } from './clusters/cluster-form.component';
+import { AppService } from '../../app.service';
+import { Algorithm, DBSCAN, MeanShift, KMeans } from '../../model/cluster-algorithm';
+import { ClusterFormComponent } from './formBuilder/cluster-form.component';
 
 @Component({
   selector: 'app-segmentation',
@@ -18,9 +18,7 @@ import { ClusterFormComponent } from './clusters/cluster-form.component';
 })
 export class SegmentationComponent {
 
-    @Input() pointcloud: number[][];
-
-    @Output() segments = new EventEmitter<JSON>();
+    @Output() settings = new EventEmitter<Algorithm.Cluster.Output>();
 
     @ViewChild('clusterForm') clusterForm: ClusterFormComponent
 
@@ -39,30 +37,34 @@ export class SegmentationComponent {
       this.clusterForm.onChangeAlgorithm(Algorithm.Cluster.Names[e.value]);
     }
 
-    private get settings(): Algorithm.Cluster.Output {
+    private get output(): Algorithm.Cluster.Output {
       let settings = {};
       for (let key in this.clusterForm.form.controls) {
         settings[key] = this.clusterForm.form.controls[key].value;
       }
       switch (Algorithm.Cluster.Names[this.selected]) {
         case Algorithm.Cluster.Names.DBSCAN:
-          return { cluster: (settings as DBSCAN.Fields) };
+          return { 
+            name: Algorithm.Cluster.Names.DBSCAN,
+            cluster: (settings as DBSCAN.Fields) 
+          };
         case Algorithm.Cluster.Names.MEANSHIFT:
-          return { cluster: (settings as MeanShift.Fields) };
+          return { 
+            name: Algorithm.Cluster.Names.MEANSHIFT,
+            cluster: (settings as MeanShift.Fields) 
+          };
         case Algorithm.Cluster.Names.KMEANS:
-          return { cluster: (settings as KMeans.Fields) };
+          return { 
+            name: Algorithm.Cluster.Names.KMEANS,
+            cluster: (settings as KMeans.Fields) 
+          };
         default:
           throw TypeError("Not implemented");
       }
     }
 
-    segment() {
-      let settings = this.settings;
-      this.$appService.getClusters(this.pointcloud, settings, Algorithm.Cluster.Names[this.selected]).subscribe(data => {
-          let dict: JSON = data.json();
-          this.segments.emit(dict);
-        }
-      )
+    onSegment() {
+      this.settings.emit(this.output);
     }
 
 }

@@ -15,12 +15,12 @@ export class AppService {
     
     constructor(private _http: Http, private _httpClient: HttpClient) {}
 
-    getClusters(pointcloud: number[][], clusterSettings: Algorithm.Cluster.Output, clusterAlgorithm: Algorithm.Cluster.Names): Observable<Response> {
+    getClusters(pointcloud: number[][], clusterSettings: Algorithm.Cluster.Output): Observable<Response> {
         let body = new FormData();
         if (typeof pointcloud != 'undefined' 
             && typeof clusterSettings != 'undefined') {
             body.append('pointcloud', JSON.stringify(pointcloud));
-            body.append('cluster_algorithm', clusterAlgorithm.toString());
+            body.append('cluster_algorithm', clusterSettings.name.toString());
             for (let key in clusterSettings.cluster) {
                 body.append(key, clusterSettings.cluster[key].toString());
             }

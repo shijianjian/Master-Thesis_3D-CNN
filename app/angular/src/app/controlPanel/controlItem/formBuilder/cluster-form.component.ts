@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { FormGroup } from "@angular/forms";
-import { Algorithm } from "../../model/cluster-algorithm";
+import { Algorithm } from "../../../model/cluster-algorithm";
 import { ClusterBuilderService, ClusterAlgorithmSettings } from "./cluster-builder.service";
 
 @Component({

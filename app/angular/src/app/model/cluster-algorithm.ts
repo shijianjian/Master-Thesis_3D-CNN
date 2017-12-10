@@ -11,6 +11,7 @@ export namespace Algorithm {
         }
 
         export interface Output {
+            name: Names;
             cluster: DBSCAN.Fields | MeanShift.Fields | KMeans.Fields;
         }
 

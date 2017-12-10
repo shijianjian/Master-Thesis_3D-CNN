@@ -17,7 +17,7 @@ export class CameraGuiService {
     public controllers: Subject<GuiParameters> = new BehaviorSubject<GuiParameters>(this.parameters);
 
     // globle shared gui settings
-    private gui: GUI = new dat.GUI();;
+    private gui: GUI = new dat.GUI();
     
     private figureSize = this.gui
             .add(this.parameters, 'size')

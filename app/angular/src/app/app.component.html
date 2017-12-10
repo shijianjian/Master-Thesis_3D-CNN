@@ -1,19 +1,12 @@
-<div class="col-7">
-    <div style="display: flex; justify-content:space-around;">
-        <div>
-            <label for="fileUpload" class="btn btn-block btn-outline-primary">Choose File</label>
-            <input id="fileUpload" style="display: none;" type="file" ng2FileSelect [uploader]="uploader" />
-        </div>
-        <app-model-selector></app-model-selector>
+<div class="app-main-view">
+    <app-control-panel
+        class="col-md-4"
+        (segments)="onSegemenets($event)"
+        (pointcloud)="onPointcloud($event)"></app-control-panel>
+    <div class="col-md-7">
+        <app-camera-native class="app-container-inline" [pointcloud]="pointcloud"></app-camera-native>
     </div>
-    <!-- <app-camera class="app-container-inline" [settings]="cameraSettings"></app-camera> -->
-    <app-camera-native class="app-container-inline" [pointcloud]="pointcloud"></app-camera-native>
-    <app-segmentation 
-        *ngIf="filename"
-        [pointcloud]="pointcloud"
-        (segments)="onSegments($event)"
-    ></app-segmentation>
 </div>
-<div class="col-5" style="padding-left: 15px;">
+<div>
     <app-segmentation-list [segments]="segs"></app-segmentation-list>
 </div>
