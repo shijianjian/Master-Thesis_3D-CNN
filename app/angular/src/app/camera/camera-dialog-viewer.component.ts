@@ -20,8 +20,8 @@ export class CameraDialogViewerComponent implements OnChanges{
 
     openDialog() {
         let dialogRef = this.dialog.open(CameraDialogComponent, {
-          width: '80vw',
-          height: '80vh',
+          width: '85vw',
+          height: '85vh',
           data: this.element
         });
         dialogRef.afterClosed().subscribe(result => {

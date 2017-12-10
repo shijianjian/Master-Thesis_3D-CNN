@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { PageEvent } from '@angular/material';
+import { CanvasSettings } from '../model/visual-settings';
 
 @Component({
   selector: 'app-segmentation-list',
@@ -27,6 +28,10 @@ export class SegmentationListComponent implements OnChanges {
   selectedSegments: Array<number[][]> = [];
 
   @Input() segments: Array<number[][]> = [];
+  canvasSettings: CanvasSettings = {
+    width: window.innerWidth*0.25,
+    height: window.innerHeight*0.2
+  }
 
   running: boolean = false;
 

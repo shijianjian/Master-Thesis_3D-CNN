@@ -6,3 +6,8 @@ export interface CameraParams {
     look_y: number;
     look_z: number;
 }
+
+export interface CanvasSettings {
+    width: number;
+    height: number;
+}

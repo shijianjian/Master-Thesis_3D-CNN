@@ -10,6 +10,9 @@ export class CameraDialogComponent implements OnInit {
     @ViewChild('content')
     content: ElementRef;
 
+    private width;
+    private height;
+
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
         public dialogRef: MatDialogRef<CameraDialogComponent>) 
@@ -20,10 +23,11 @@ export class CameraDialogComponent implements OnInit {
     ngOnInit() {
         console.log(this.data);
         this.content.nativeElement.append(this.data);
+        // fire resize camera
+        window.dispatchEvent(new Event('resize'));
     }
 
     close() {
         this.dialogRef.close(this.data);
     }
-
 }

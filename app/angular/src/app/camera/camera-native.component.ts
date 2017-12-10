@@ -4,7 +4,7 @@ import { MeshBasicMaterial, PointsMaterial, Points, Mesh } from 'three';
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
 import { PointCloudLoader, VoxelGridLoader } from './util/pointcloud-loader';
-import { CameraParams } from '../model/visual-settings';
+import { CameraParams, CanvasSettings } from '../model/visual-settings';
 
 declare const THREE;
 declare const PLYLoader;
@@ -12,11 +12,19 @@ declare const OrbitControls;
 
 @Component({
   selector: 'app-camera-native',
-  templateUrl: './camera-native.component.html'
+  templateUrl: './camera-native.component.html',
+  styles: [`
+    :host {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+  `]
 })
 export class CameraNativeComponent implements OnChanges {
 
     @Input() data: number[][] | number[][][];
+    @Input() canvasSettings: CanvasSettings;
 
     renderer: THREE.WebGLRenderer;
     figure: Points | Mesh[];
@@ -24,6 +32,8 @@ export class CameraNativeComponent implements OnChanges {
 
     @ViewChild('canvas')
     private canvasRef: ElementRef;
+    @ViewChild('container')
+    private containerRef: ElementRef;
     
     constructor(private $cameraGui: CameraGuiService) {
         this.$cameraGui.controllers.subscribe((param: GuiParameters) => {
@@ -47,6 +57,11 @@ export class CameraNativeComponent implements OnChanges {
     ngOnChanges() {
         if (!this.renderer) {
             this.renderer = PointCloudLoader.initRender(this.canvas);
+        }
+        if (this.canvasSettings) {
+            let width = this.canvasSettings.width;
+            let height = this.canvasSettings.height;
+            this.renderer.setSize(width, height);
         }
         if (!this.data) {
             return;
@@ -84,6 +99,10 @@ export class CameraNativeComponent implements OnChanges {
         return this.canvasRef.nativeElement;
     }
 
+    get container(): HTMLDivElement {
+        return this.containerRef.nativeElement;
+    }
+
     private init(cameraParams: CameraParams, camera: THREE.PerspectiveCamera, data: number[][] | number[][][]) {
         if (typeof data[0][0] == 'number') {
             let geometry = PointCloudLoader.getPointsGeometry((data as number[][]));
@@ -101,8 +120,11 @@ export class CameraNativeComponent implements OnChanges {
         }
         let controls = this.initControl(cameraParams, camera);
         controls.addEventListener('change', (event) => {
-            this.render(this.scene, camera)
+            this.render(this.scene, camera);
         });
+        window.addEventListener('resize', (event) => {
+            this.onWindowResize(camera);
+        }, false)
         this.animate(this.scene, camera);
     }
 
@@ -118,9 +140,16 @@ export class CameraNativeComponent implements OnChanges {
     }
 
     private onWindowResize(camera) {
-        camera.aspect = this.canvas.clientWidth/this.canvas.clientHeight;
+        let width = this.container.clientWidth;
+        let height = this.container.clientHeight;
+        if (height*2 > width) {
+            height = width/2;
+        } else if (width/2 > height) {
+            width = height*2;
+        }
+        camera.aspect = width/height;
         camera.updateProjectionMatrix();
-        this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+        this.renderer.setSize(width, height);
     }
 
     private animate(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {

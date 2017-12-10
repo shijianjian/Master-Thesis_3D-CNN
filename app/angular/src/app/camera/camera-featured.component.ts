@@ -3,18 +3,24 @@ import { MatTabChangeEvent } from '@angular/material';
 
 import { VoxelGridLoader } from './util/pointcloud-loader';
 import { CameraNativeComponent } from './camera-native.component';
+import { CanvasSettings } from '../model/visual-settings';
+
 @Component({
 	selector: 'app-camera-featured',
 	templateUrl: './camera-featured.component.html',
     styles: [`
         :host {
+            display: block;
             position: relative;
+            width: 100%;
+            height: 100%;
         }
 	`]
 })
 export class CameraFeaturedComponent implements OnInit, OnChanges {
 
     @Input() pointcloud: number[][];
+    @Input() canvasSettings: CanvasSettings;
     data: number[][] | number[][][];
     showViewer = true;
 
@@ -40,6 +46,8 @@ export class CameraFeaturedComponent implements OnInit, OnChanges {
     onOutputElement(element: HTMLElement) {
         this.showViewer = true;
         this.setCanvas(element);
+        // fire resize camera
+        window.dispatchEvent(new Event('resize'));
     }
 
     onView() {
