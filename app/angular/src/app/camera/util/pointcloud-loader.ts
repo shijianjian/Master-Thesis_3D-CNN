@@ -176,7 +176,7 @@ export class VoxelGridLoader extends ThreeDLoader {
 
 }
 
-namespace PointCloudCalculations {
+export namespace PointCloudCalculations {
 
     interface Ranges {
         X_MAX: number;

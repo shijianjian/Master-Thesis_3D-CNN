@@ -1,3 +1,24 @@
 <mat-icon class="corner-icon" (click)="close()">fullscreen_exit</mat-icon>
-<div #content style="width: 100%; height: 100%;"></div>
+<div class="row" style="width: 100%;">
+    <div class="col-sm-9" #content></div>
+    <div class="col-sm-3">
+        Export
+    </div>
+</div>
+
+<div class="row">
+    <mat-slider 
+        class="col-sm-9"
+        [(ngModel)]="noise"
+        (change)="onNoisy($event)"
+        step= "1"
+        max="100"
+        min="0"></mat-slider>
+    <mat-form-field>
+        <input matInput type="number" 
+            [(ngModel)]="noise"
+            step= "1"
+            placeholder="Gaussian Noise">
+    </mat-form-field>
+</div>
 

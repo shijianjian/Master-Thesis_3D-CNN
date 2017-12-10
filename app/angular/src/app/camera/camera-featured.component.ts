@@ -26,14 +26,16 @@ export class CameraFeaturedComponent implements OnInit, OnChanges {
 
     private voxelgrid: number[][][];
 
-    @ViewChild('camera')
-    private cameraRef: ElementRef;
+    @ViewChild('element')
+    private elementRef: ElementRef;
     @ViewChild('parent')
     private parentRef: ElementRef;
+    @ViewChild('camera')
+    cameraComponent: CameraNativeComponent;
 
     element: HTMLElement;
     ngOnInit() {
-        this.element = this.cameraRef.nativeElement;
+        this.element = this.elementRef.nativeElement;
     }
 
     ngOnChanges() {

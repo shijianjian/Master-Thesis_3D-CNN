@@ -8,6 +8,8 @@ from sklearn.cluster import dbscan
 from sklearn.cluster import mean_shift
 from sklearn.cluster.k_means_ import k_means
 
+from cnn.util.process_pointcloud import norm_point
+
 # https://github.com/NLeSC/PattyAnalytics/blob/master/patty/segmentation/dbscan.py
 def dbscan_labels(pointcloud, epsilon, minpoints,
                   rgb_weight=0, algorithm='ball_tree'):
@@ -136,5 +138,5 @@ def find_cluster_points(point_cloud, labels):
             res.update({val: li})
     renew_dict = dict()
     for idx, key in enumerate(res):
-        renew_dict.update({str(key): res[key]})
+        renew_dict.update({str(key): norm_point(res[key])})
     return renew_dict
