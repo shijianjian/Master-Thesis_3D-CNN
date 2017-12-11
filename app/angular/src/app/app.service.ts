@@ -5,7 +5,7 @@ import { Observable } from "rxjs/Observable";
 import { map } from 'rxjs/operators';
 
 import { baseUrl } from "./settings";
-import { Algorithm, DBSCAN, MeanShift } from "./model/cluster-algorithm";
+import { Algorithm, DBSCAN, MeanShift } from "./controlItem/model/ClusterModel";
 import { Subject, BehaviorSubject } from "rxjs";
 
 @Injectable()

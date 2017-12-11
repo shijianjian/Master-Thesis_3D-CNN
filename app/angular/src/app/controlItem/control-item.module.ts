@@ -1,18 +1,18 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatSidenavModule, MatCheckboxModule, MatSelectModule } from '@angular/material';
+import { MatSidenavModule, MatCheckboxModule, MatSelectModule, MatProgressSpinnerModule } from '@angular/material';
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { ModelSelectorComponent } from './model-selector.component';
 import { ClusterAlgorithmModule } from './formBuilder/cluster-algorithm.module'
-import { SegmentationComponent } from './segmentation.component';
+import { ClusterComponent } from './cluster.component';
 import { FileUploaderComponent } from './file-uploader.component';
 
 @NgModule({
   declarations: [
     ModelSelectorComponent,
-    SegmentationComponent,
+    ClusterComponent,
     FileUploaderComponent
   ],
   imports: [
@@ -23,11 +23,12 @@ import { FileUploaderComponent } from './file-uploader.component';
     MatSidenavModule,
     MatCheckboxModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
     ClusterAlgorithmModule
   ],
   exports: [
     ModelSelectorComponent,
-    SegmentationComponent,
+    ClusterComponent,
     FileUploaderComponent
   ],
   providers: [

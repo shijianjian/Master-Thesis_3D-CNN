@@ -4,15 +4,15 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule, MatDialogModule, MatIconModule, MatSliderModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 
 import { CameraNativeComponent } from './camera-native.component';
-import { CameraFeaturedComponent } from './camera-featured.component';
 import { CameraDialogComponent } from './camera-dialog.componnet';
 import { CameraDialogViewerComponent } from './camera-dialog-viewer.component';
+import { CameraPanelComponent } from './camera-panel.component';
 
 
 @NgModule({
   declarations: [
     CameraNativeComponent,
-    CameraFeaturedComponent,
+    CameraPanelComponent,
     CameraDialogComponent,
     CameraDialogViewerComponent
   ],
@@ -28,7 +28,8 @@ import { CameraDialogViewerComponent } from './camera-dialog-viewer.component';
     MatIconModule
   ],
   exports: [
-    CameraFeaturedComponent
+    CameraPanelComponent,
+    CameraNativeComponent
   ],
   entryComponents: [
     CameraDialogComponent

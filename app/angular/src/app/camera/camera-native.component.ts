@@ -62,6 +62,15 @@ export class CameraNativeComponent implements OnChanges {
             let width = this.canvasSettings.width;
             let height = this.canvasSettings.height;
             this.renderer.setSize(width, height);
+        } else {
+            let width = this.canvas.clientWidth;
+            let height = this.canvas.clientHeight;
+            if (height*2 > width) {
+                height = width/2;
+            } else if (width/2 > height) {
+                width = height*2;
+            }
+            this.renderer.setSize(width, height);
         }
         if (!this.data) {
             return;

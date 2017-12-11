@@ -1,16 +1,12 @@
 <div class="control-panel">
     <div>
-        <app-file-uploader 
-            (uploaded)="onUploaded($event)"></app-file-uploader>
-    </div>
-    <div>
         <app-model-selector 
             [models]="models" 
             (selected)="onSelected($event)"></app-model-selector>
     </div>
     <div>
-        <app-segmentation 
+        <app-cluster 
             (settings)="onSegments($event)"
-        ></app-segmentation>
+        ></app-cluster>
     </div>
 </div>

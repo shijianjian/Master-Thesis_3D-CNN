@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatSidenavModule, MatCheckboxModule } from '@angular/material';
 
 import { ControlPanelComponent } from './control-panel.component';
-import { ControlItemModule } from './controlItem/control-item.module';
+import { ControlItemModule } from '../controlItem/control-item.module';
 
 @NgModule({
   declarations: [

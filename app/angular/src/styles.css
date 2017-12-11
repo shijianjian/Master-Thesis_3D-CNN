@@ -11,10 +11,14 @@ html, body {
     display: inline-block;
 }
 
+mat-icon {
+    cursor: pointer;
+}
+
 .corner-icon {
     position: absolute;
     right:3%;
-    top:5%;
+    top:3%;
     z-index: 1000;
     cursor: pointer;
 }

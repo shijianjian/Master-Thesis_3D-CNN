@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { Algorithm, KMeans, MeanShift, DBSCAN } from "../../../model/cluster-algorithm";
+import { Algorithm, KMeans, MeanShift, DBSCAN } from "../model/ClusterModel";
 
 @Injectable()
 export class ClusterBuilderService {

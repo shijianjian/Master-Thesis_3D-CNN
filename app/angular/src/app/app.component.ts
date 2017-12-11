@@ -4,27 +4,36 @@ import { Component } from '@angular/core';
 	selector: 'app-root',
 	templateUrl: './app.component.html',
 	styles: [`
-	.app-main-view {
-		display: flex;
-		padding-top: 30px;
-		justify-content: space-between;
-	}
+		:host {
+			display: inline-block;
+			width: 100vw;
+			height: 100vh;
+		}
+		.sidenav-container{
+			position: absolute;
+			top:0;
+			bottom:0;
+			left:0;
+			right:0;
+		}
 	`]
 })
 export class AppComponent {
-	pointcloud;
+	
 	segs = [];
+	opened = false;
 
-	onSegemenets(e: JSON) {
-		let segs = []
-		for (let key in e) {
-			segs.push(e[key]);
-		}
-		this.segs = Array.from(segs);
+	onSegments(e: number[][][]) {
+		this.segs = e;
+		this.opened = true;
 	}
 
-	onPointcloud(e: number[][]) {
-		this.pointcloud = Array.from(e);
+	onMenuToggle(e: boolean) {
+		this.opened = !this.opened;
+	}
+
+	get showMenu() {
+		return this.segs && this.segs.length>0 ? true : false;
 	}
 
 }

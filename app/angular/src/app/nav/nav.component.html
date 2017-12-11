@@ -1,0 +1,17 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <mat-icon 
+            (click)="onMenu()" 
+            [style.visibility]="showMenu ? 'visible' : 'hidden'">menu</mat-icon>
+        <span>Point Cloud Processing</span>
+        <div style="margin-left:30px;">
+            <app-file-uploader 
+                style="display: inline-flex;"
+                (uploaded)="onUploaded($event)"></app-file-uploader>
+            <button 
+                *ngIf="points"
+                (click)="onReload()"
+                class="btn btn-outline-primary">Reload</button>
+        </div>
+    </mat-toolbar-row>
+</mat-toolbar>

@@ -6,8 +6,8 @@ import { CameraNativeComponent } from './camera-native.component';
 import { CanvasSettings } from '../model/visual-settings';
 
 @Component({
-	selector: 'app-camera-featured',
-	templateUrl: './camera-featured.component.html',
+	selector: 'app-camera-panel',
+	templateUrl: './camera-panel.component.html',
     styles: [`
         :host {
             display: block;
@@ -17,10 +17,9 @@ import { CanvasSettings } from '../model/visual-settings';
         }
 	`]
 })
-export class CameraFeaturedComponent implements OnInit, OnChanges {
+export class CameraPanelComponent implements OnInit, OnChanges {
 
     @Input() pointcloud: number[][];
-    @Input() canvasSettings: CanvasSettings;
     data: number[][] | number[][][];
     showViewer = true;
 
@@ -39,10 +38,7 @@ export class CameraFeaturedComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges() {
-        this.onSelectionChanged({
-            index: 0,
-            tab: null
-        });
+        this.data = this.pointcloud;
     }
 
     onOutputElement(element: HTMLElement) {
@@ -68,16 +64,4 @@ export class CameraFeaturedComponent implements OnInit, OnChanges {
         this.parentRef.nativeElement.appendChild(element);
     }
 
-    onSelectionChanged(event: MatTabChangeEvent) {
-        if (this.pointcloud && event.index == 0) {
-            // Point Cloud
-            this.data = this.pointcloud
-        } else if (this.pointcloud && event.index == 1) {
-            // Voxel Grid
-            if(!this.voxelgrid) {
-                this.voxelgrid = VoxelGridLoader.voxelize(this.pointcloud);
-            }
-            this.data = this.voxelgrid;
-        }
-    }
 }

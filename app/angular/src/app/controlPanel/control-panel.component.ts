@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 
 import { AppService } from "../app.service";
-import { Algorithm } from "../model/cluster-algorithm";
+import { Algorithm } from "../controlItem/model/ClusterModel";
+import { MainViewService } from "../main-view.service";
 
 @Component({
     selector: 'app-control-panel',
@@ -21,15 +22,19 @@ import { Algorithm } from "../model/cluster-algorithm";
     `]
 })
 export class ControlPanelComponent implements OnInit {
-    opened = false;
+
     models = [];
 
-    @Output() pointcloud = new EventEmitter<number[][]>();
     @Output() segments = new EventEmitter<JSON>();
     points: number[][];
 
-    constructor(private $appService: AppService) {
-
+    constructor(
+        private $appService: AppService,
+        private _mainViewService: MainViewService
+    ) {
+        this._mainViewService.pointcloud.subscribe(data => {
+            this.points = data;
+        })
     }
 
     ngOnInit() {
@@ -41,11 +46,6 @@ export class ControlPanelComponent implements OnInit {
         })
     }
 
-    onUploaded(e: number[][]) {
-        this.points = e;
-        this.pointcloud.emit(e);
-    }
-
     onSelected(e: string) {
         this.$appService.selectedModel.next(e);
     }
@@ -53,6 +53,7 @@ export class ControlPanelComponent implements OnInit {
     onBackdropClick(e){
         console.log(e);
     }
+
     onSegments(event: Algorithm.Cluster.Output) {
       this.$appService.getClusters(this.points, event).subscribe(data => {
           let dict: JSON = data.json();

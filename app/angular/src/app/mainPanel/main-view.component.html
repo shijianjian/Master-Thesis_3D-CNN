@@ -1,0 +1,23 @@
+<mat-tab-group (selectedTabChange)="onSelectionChanged($event)">
+    <mat-tab label="Point Cloud"></mat-tab>
+    <mat-tab label="Voxel Grid"></mat-tab>
+</mat-tab-group>
+<app-camera-native 
+    #camera
+    [canvasSettings]="canvasSettings" 
+    [data]="data"></app-camera-native>
+<div class="corner-icon" id="corner-icon-group">
+    <mat-icon 
+        [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
+        mat-icon-button 
+        [matMenuTriggerFor]="menu">border_clear</mat-icon>
+    <mat-menu #menu="matMenu">
+        <div 
+            style="padding: 1em;"
+            onClick="if(event.stopPropagation){event.stopPropagation();}event.cancelBubble=true;">
+            <app-cluster 
+                (segmented)="onSegmented($event)"
+                ></app-cluster>
+        </div>
+    </mat-menu>
+</div>

@@ -9,10 +9,13 @@
     </mat-select>
 </mat-form-field>
 <app-cluster-form #clusterForm></app-cluster-form>
-<input 
-    *ngIf="selected && clusterForm.form.valid" 
-    (click)="onSegment()" 
-    class="btn btn-outline-primary" 
-    style="float:right;" 
-    type="button" 
-    value="Segment"/>
+<div style="float:right;" >
+    <mat-spinner diameter="35" *ngIf="running"></mat-spinner>
+    <input 
+        [disabled]="clusterForm && clusterForm.form && !clusterForm.form.valid" 
+        *ngIf="selected && !running"
+        (click)="onSegment()" 
+        class="btn btn-outline-primary" 
+        type="button" 
+        value="Segment"/>
+</div>

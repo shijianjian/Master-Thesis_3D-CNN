@@ -1,12 +1,21 @@
-<div class="app-main-view">
-    <app-control-panel
-        class="col-md-4"
-        (segments)="onSegemenets($event)"
-        (pointcloud)="onPointcloud($event)"></app-control-panel>
-    <div class="col-md-7">
-        <app-camera-featured class="app-container-inline" [pointcloud]="pointcloud"></app-camera-featured>
-    </div>
-</div>
-<div>
-    <app-segmentation-list [segments]="segs"></app-segmentation-list>
-</div>
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav 
+        #sidenav 
+        mode="side" 
+        style="max-width:30vw; height: 100vh; box-shadow: 3px 0 6px rgba(0,0,0,.24);"
+        [(opened)]="opened">
+        <app-segmentation-list 
+            style="height: 100%;"
+            [segments]="segs"></app-segmentation-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <app-nav 
+            [showMenu]="showMenu"
+            (menuToggle)="onMenuToggle($event)"></app-nav>
+        <app-main-view
+            (segmented)="onSegments($event)"
+            style="max-width: 70vw;"
+            class="app-container-inline"></app-main-view>
+    </mat-sidenav-content>
+</mat-sidenav-container>
