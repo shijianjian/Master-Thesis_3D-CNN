@@ -1,31 +1,61 @@
-<mat-tab-group (selectedTabChange)="onSelectionChanged($event)">
-    <mat-tab label="Point Cloud"></mat-tab>
-    <mat-tab label="Voxel Grid"></mat-tab>
-</mat-tab-group>
-<div class="corner-icon">
-    <mat-icon 
-        [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
-        mat-icon-button 
-        [matMenuTriggerFor]="menu">border_clear</mat-icon>
-    <mat-menu #menu="matMenu">
-        <div 
-            style="padding: 1em;"
-            onClick="if(event.stopPropagation){event.stopPropagation();}event.cancelBubble=true;">
-            <app-cluster 
-                (segmented)="onSegmented($event)"
-                ></app-cluster>
-        </div>
-    </mat-menu>
-</div>
+<div class="row">
+    <mat-tab-group (selectedTabChange)="onSelectionChanged($event)">
+        <mat-tab label="Point Cloud"></mat-tab>
+        <mat-tab label="Voxel Grid"></mat-tab>
+    </mat-tab-group>
+    <div class="corner-icon" style="display:flex;">
+        <mat-icon 
+            class="big-gap"
+            matTooltip="Reset" 
+            matTooltipPosition="below"
+            [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
+            mat-icon-button 
+            (click)="onReset()">cached</mat-icon>
+        <span class="small-gap">{{ prediction | titlecase }}</span>
+        <mat-icon 
+            class="small-gap"
+            matTooltip="Predict" 
+            matTooltipPosition="below"
+            [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
+            mat-icon-button 
+            [matMenuTriggerFor]="predMenu">gps_fixed</mat-icon>
+        <mat-icon 
+            class="small-gap"
+            matTooltip="Segment" 
+            matTooltipPosition="below"
+            [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
+            mat-icon-button 
+            [matMenuTriggerFor]="menu">border_clear</mat-icon>
+        <mat-menu #menu="matMenu">
+            <div 
+                style="padding: 1em;"
+                onClick="if(event.stopPropagation){event.stopPropagation();}event.cancelBubble=true;">
+                <app-cluster 
+                    (segmented)="onSegmented($event)"
+                    ></app-cluster>
+            </div>
+        </mat-menu>
+        <mat-menu #predMenu="matMenu">
+            <div 
+                style="padding: 1em;"
+                onClick="if(event.stopPropagation){event.stopPropagation();}event.cancelBubble=true;">
+                <app-model-selector></app-model-selector>
+                <app-prediction 
+                    (prediction)="onPrediction($event)"
+                    [points]="pointcloud"></app-prediction>
+            </div>
+        </mat-menu>
+    </div>
 
-<app-camera-native 
-    [canvasSettings]="canvasSettings" 
-    [data]="data"></app-camera-native>
+    <app-camera-native 
+        [canvasSettings]="canvasSettings" 
+        [data]="data"></app-camera-native>
+</div>
 
 <app-data-panel
     #form
     *ngIf="data && data.length>0"
-    class="container" 
+    class="row" 
     [pointcloud]="origPoints"
     (outputPoints)="onOutputPoints($event)"
     ></app-data-panel>

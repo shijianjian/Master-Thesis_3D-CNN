@@ -32,6 +32,19 @@ class ThreeDLoader {
         
         return camera;
     }
+
+    static updateCamera(camera: THREE.PerspectiveCamera, cameraParams: CameraParams) {
+        camera.position.set(
+            cameraParams.position_x, 
+            cameraParams.position_y,
+            cameraParams.position_z);
+        camera.lookAt(new THREE.Vector3(
+            cameraParams.look_x,
+            cameraParams.look_y,
+            cameraParams.look_z));
+        camera.updateProjectionMatrix();
+        return camera;
+    }
 }
 
 export class PointCloudLoader extends ThreeDLoader {

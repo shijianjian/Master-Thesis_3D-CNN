@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { MatPaginatorModule, MatIconModule } from '@angular/material';
+import { MatPaginatorModule, MatTooltipModule, MatIconModule } from '@angular/material';
 
 import { SegmentationListComponent } from "./segmentation-list.component";
 import { CameraModule } from "../camera/camera.module";
@@ -13,6 +13,7 @@ import { CameraModule } from "../camera/camera.module";
       BrowserModule,
       MatIconModule,
       MatPaginatorModule,
+      MatTooltipModule,
       CameraModule
     ],
     exports: [

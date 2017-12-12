@@ -5,7 +5,7 @@
         style="display:block;" 
         type="button" 
         value="Recognize" 
-        (click)="predict(seg)"/>
+        (click)="predict()"/>
     <mat-spinner diameter="35" *ngIf="running"></mat-spinner>
     <div *ngIf="!running">{{ result }}</div>
 </div>

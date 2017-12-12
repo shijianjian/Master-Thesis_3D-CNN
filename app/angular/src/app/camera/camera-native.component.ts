@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
-import { MeshBasicMaterial, PointsMaterial, Points, Mesh } from 'three';
+import { MeshBasicMaterial, PointsMaterial, Points, Mesh, Vector3 } from 'three';
 
 import { CameraGuiService } from '../camera-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
@@ -28,6 +28,8 @@ export class CameraNativeComponent implements OnChanges {
 
     renderer: THREE.WebGLRenderer;
     figure: Points | Mesh[];
+    controls: THREE.OrbitControls;
+    camera: THREE.PerspectiveCamera;
     scene : THREE.Scene = new THREE.Scene();
 
     @ViewChild('canvas')
@@ -85,23 +87,49 @@ export class CameraNativeComponent implements OnChanges {
         while (this.scene.children.length){
             this.scene.remove(this.scene.children[0]);
         }
+        this.controls.removeEventListener('change', this.onControlChangeEvent);
+        window.removeEventListener('resize', this.onWindowResizeEvent)
     }
 
     private onRender(data: number[][] | number[][][]) {
         if (!data || !data[0]) {
             return;
         }
+        this.initScene(data);
+        let cameraParams: CameraParams = this.getCameraParams(data);
+        if (!this.camera) {
+            this.camera = PointCloudLoader.buildCamera(this.canvas, cameraParams);    
+        } else {
+            this.camera = PointCloudLoader.updateCamera(this.camera, cameraParams)
+        }
+        if (!this.controls) {
+            this.controls = this.initControl(cameraParams, this.camera);
+        } else {
+            this.controls.target.set(cameraParams.look_x, cameraParams.look_y, cameraParams.look_z);
+            this.controls.update();
+        }
+        this.controls.addEventListener('change', this.onControlChangeEvent);
+        window.addEventListener('resize', this.onWindowResizeEvent, false)
+        this.animate(this.scene, this.camera);
+    }
+
+    private onControlChangeEvent = (event) => {
+        this.render(this.scene, this.camera);
+    };
+    private onWindowResizeEvent = (event) => {
+        this.onWindowResize(this.camera);
+    }
+
+    private getCameraParams(data: number[][] | number[][][]): CameraParams {
+        let cameraParams: CameraParams;
         if (typeof data[0][0] == 'number') {
-            let cameraSettings = PointCloudLoader.calculate((data as number[][]));
-            let camera = PointCloudLoader.buildCamera(this.canvas, cameraSettings);
-            this.init(cameraSettings, camera, (data as number[][]));
+            cameraParams = PointCloudLoader.calculate((data as number[][]));
         } else if (data[0][0] && typeof data[0][0][0] == 'number') {
-            let cameraSettings = VoxelGridLoader.calculate((data as number[][][]));
-            let camera = VoxelGridLoader.buildCamera(this.canvas, cameraSettings);
-            this.init(cameraSettings, camera, (data as number[][][]));
+            cameraParams = VoxelGridLoader.calculate((data as number[][][]));
         } else {
             throw new TypeError("Not recognized array format");
         }
+        return cameraParams;
     }
 
     get canvas(): HTMLCanvasElement {
@@ -112,7 +140,7 @@ export class CameraNativeComponent implements OnChanges {
         return this.containerRef.nativeElement;
     }
 
-    private init(cameraParams: CameraParams, camera: THREE.PerspectiveCamera, data: number[][] | number[][][]) {
+    private initScene(data: number[][] | number[][][]): void {
         if (typeof data[0][0] == 'number') {
             let geometry = PointCloudLoader.getPointsGeometry((data as number[][]));
             let figure = PointCloudLoader.loadPoints(geometry);
@@ -127,14 +155,6 @@ export class CameraNativeComponent implements OnChanges {
         } else {
             throw new TypeError("Not recognized array format");
         }
-        let controls = this.initControl(cameraParams, camera);
-        controls.addEventListener('change', (event) => {
-            this.render(this.scene, camera);
-        });
-        window.addEventListener('resize', (event) => {
-            this.onWindowResize(camera);
-        }, false)
-        this.animate(this.scene, camera);
     }
 
     private initControl(cameraSettings: CameraParams, camera: THREE.PerspectiveCamera): THREE.OrbitControls {

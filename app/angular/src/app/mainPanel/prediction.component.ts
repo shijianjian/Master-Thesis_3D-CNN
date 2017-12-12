@@ -3,8 +3,8 @@ import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { AppService } from '../app.service';
 
 @Component({
-  selector: 'app-seg-prediction',
-  templateUrl: './seg-prediction.component.html',
+  selector: 'app-prediction',
+  templateUrl: './prediction.component.html',
   styles: [`
     :host {
       display: inline-block;
@@ -12,9 +12,9 @@ import { AppService } from '../app.service';
     }
   `]
 })
-export class SegPredictionComponent implements OnInit {
+export class PredictionComponent implements OnInit {
 
-    @Input() seg: number[][];
+    @Input() points: number[][];
     @Output() prediction = new EventEmitter<string>();
     running: boolean = false;
     result: string;
@@ -35,10 +35,11 @@ export class SegPredictionComponent implements OnInit {
       })
     }
     
-    predict(points: number[][]) {
+    predict() {
         this.running = true;
-        this.$appService.predict(points, this.model).subscribe((data) => {
+        this.$appService.predict(this.points, this.model).subscribe((data) => {
             this.result = data.json();
+            this.prediction.emit(this.result);
             this.running = false;
         })
     }

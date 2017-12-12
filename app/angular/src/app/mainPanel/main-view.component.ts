@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild, ElementRef, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild, ElementRef, Output, HostBinding } from '@angular/core';
 import { MatTabChangeEvent, MatMenuTrigger, MatSliderChange } from '@angular/material';
 
 import { VoxelGridLoader } from '../camera/util/pointcloud-loader';
@@ -16,20 +16,30 @@ import { DataPanelComponent } from './data-panel.component';
             display: block;
             position: relative;
             width: 100%;
-            padding-left:2em;
+        }
+        .small-gap {
+            margin-left:3px;
+        }
+        .big-gap {
+            margin-left:3px;
+            margin-right: 7px;
         }
 	`]
 })
 export class MainViewComponent implements OnInit, OnChanges {
+
+    @HostBinding('class.container') binding: boolean = true;
 
     @Input() canvasSettings: CanvasSettings;
     @Output() segmented = new EventEmitter<number[][][]>();
     data: number[][] | number[][][];
 
     origPoints: number[][];
-    private pointcloud: number[][];
+    pointcloud: number[][];
     private voxelgrid: number[][][];
     currentTab: number;
+
+    prediction: string;
 
     @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
     @ViewChild("form") formCom: DataPanelComponent;
@@ -51,6 +61,11 @@ export class MainViewComponent implements OnInit, OnChanges {
             tab: null
         });
         this.formCom ? this.formCom.reset() : null;
+        this.prediction = undefined;
+    }
+
+    onReset() {
+        this.onOutputPoints(this.origPoints);
     }
 
     onOutputPoints(e: number[][]) {
@@ -60,6 +75,10 @@ export class MainViewComponent implements OnInit, OnChanges {
             index: this.currentTab ? this.currentTab : 0,
             tab: null
         });
+    }
+
+    onPrediction(e: string) {
+        this.prediction = e;
     }
 
     onSegmented(e: JSON) {

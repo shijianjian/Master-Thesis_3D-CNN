@@ -26,3 +26,8 @@ mat-icon {
 mat-dialog-container {
     position: relative;
 }
+
+.mat-menu-panel {
+    min-width: 20em !important;
+    max-width: 20em !important;
+}

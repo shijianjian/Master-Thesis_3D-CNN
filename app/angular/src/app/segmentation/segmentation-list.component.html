@@ -1,11 +1,14 @@
 <ng-container *ngIf="segments.length > 0">
     <div class="seg-display">
         <div style="padding: 5px;" *ngFor="let seg of selectedSegments; let i = index;">
-            <mat-icon (click)="onLaunch(seg)">launch</mat-icon>
+            <mat-icon 
+                style="display:block; margin-left:auto;"
+                matTooltip="Launch To Main View" 
+                matTooltipPosition="below"
+                (click)="onLaunch(seg)">launch</mat-icon>
             <app-camera-panel
                 class="app-container-inline" 
                 [pointcloud]="seg"></app-camera-panel>
-            <!-- <app-seg-prediction style="margin-top:50px;" class="align-bottom" [seg]="seg"></app-seg-prediction> -->
         </div>
     </div>
     <mat-paginator 

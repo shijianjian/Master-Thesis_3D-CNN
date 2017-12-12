@@ -1,8 +1,7 @@
 <mat-form-field>
     <mat-select
         placeholder="Select Pre-trained Model"
-        (selectionChange)="onSelected($event)"
-        [(value)]="selected">
+        (selectionChange)="onSelected($event)">
         <mat-option *ngFor="let model of models" [value]="model">
         {{ model }}
         </mat-option>
