@@ -7,17 +7,19 @@ import { Subject, BehaviorSubject } from "rxjs";
 import { PointsMaterial, MeshBasicMaterial, Material } from "three";
 
 @Injectable()
-export class CameraGuiService {
+export class DatGuiService {
 
     private parameters: GuiParameters = {
         size: 0.01,
         opacity: 1,
         wireframe: true,
     };
-    public controllers: Subject<GuiParameters> = new BehaviorSubject<GuiParameters>(this.parameters);
+    private _controllers: Subject<GuiParameters> = new BehaviorSubject<GuiParameters>(this.parameters);
 
     // globle shared gui settings
-    private gui: GUI = new dat.GUI();
+    private gui: GUI = new dat.GUI({
+        autoPlace: false
+    });
     
     private figureSize = this.gui
             .add(this.parameters, 'size')
@@ -32,16 +34,24 @@ export class CameraGuiService {
     constructor() {
         this.figureSize.onChange((value) => {
             this.parameters.size = value;
-            this.controllers.next(this.parameters);
+            this._controllers.next(this.parameters);
         });
         this.figureMaterial.onChange((value) => {
             this.parameters.wireframe = value;
-            this.controllers.next(this.parameters);
+            this._controllers.next(this.parameters);
         });
         this.figureOpacity.onChange((value) => {
             this.parameters.opacity = value;
-            this.controllers.next(this.parameters);
+            this._controllers.next(this.parameters);
         });
+        setTimeout(() => {
+            this.gui.close();
+            this.gui.domElement.style.position = "absolute";
+            this.gui.domElement.style.top = "0";
+            this.gui.domElement.style.right = "0";
+            document.getElementById("main-camera").style.position = "relative";
+            document.getElementById("main-camera").appendChild(this.gui.domElement);
+        })
     }
 
     get getControllers(): GuiControllers {
@@ -50,6 +60,28 @@ export class CameraGuiService {
             FigureOpacity: this.figureOpacity,
             FigureSize: this.figureSize
         }
+    }
+
+    setControlParams(parameters: GuiParameters) {
+        this._controllers.next(parameters);
+        this.parameters = parameters;
+        setTimeout(() => {
+            this.figureSize.setValue(parameters.size);
+            this.figureMaterial.setValue(parameters.wireframe);
+            this.figureOpacity.setValue(parameters.opacity);
+        })
+    }
+
+    get controllers() {
+        return this._controllers;
+    }
+
+    openGui() {
+        this.gui.open();
+    }
+
+    closeGui() {
+        this.gui.close();
     }
 
     get getParameters(): GuiParameters {

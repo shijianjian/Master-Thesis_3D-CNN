@@ -93,15 +93,19 @@ export class PointCloudLoader extends ThreeDLoader {
     }
 
     static loadPoints(geometry: THREE.Geometry, pointsMaterialParams?: THREE.PointsMaterialParameters): THREE.Points {
-        let params = pointsMaterialParams ? pointsMaterialParams : {
-                size: 0.01,
-                vertexColors: THREE.VertexColors,
-                transparent: true,
-                opacity: 1
-            };
+        let params = pointsMaterialParams ? pointsMaterialParams : PointCloudLoader.DefaultPointsParams;
         let material = new THREE.PointsMaterial(params);
         let figure: THREE.Points = new THREE.Points(geometry, material);
         return figure;
+    }
+
+    static get DefaultPointsParams(): THREE.PointsMaterialParameters {
+        return {
+            size: 0.01,
+            vertexColors: THREE.VertexColors,
+            transparent: true,
+            opacity: 1
+        }
     }
 
 }
@@ -140,13 +144,7 @@ export class VoxelGridLoader extends ThreeDLoader {
     }
 
     static loadMesh(geometry: THREE.Geometry, meshBasicMaterial?: THREE.MeshBasicMaterial): THREE.Mesh {
-        let params = meshBasicMaterial ? meshBasicMaterial : {
-            side: THREE.DoubleSide,
-            vertexColors: THREE.VertexColors,
-            transparent: true,
-            opacity: 1,
-            wireframe: true,
-        };
+        let params = meshBasicMaterial ? meshBasicMaterial : VoxelGridLoader.DefaultVoxelParams;
         let material: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial(params);
         let figure: THREE.Mesh = new THREE.Mesh(geometry, material);
         return figure;
@@ -157,7 +155,7 @@ export class VoxelGridLoader extends ThreeDLoader {
         return PointCloudCalculations.voxelize(pointcloud);
     }
 
-    static getVoxelMeshes(voxelgrid: number[][][]): THREE.Mesh[] {
+    static getVoxelMeshes(voxelgrid: number[][][], meshBasicMaterialParams?: THREE.MeshBasicMaterialParameters): THREE.Mesh[] {
         let geometry: THREE.BoxGeometry = new THREE.BoxGeometry(1, 1, 1);
         let meshes: THREE.Mesh[] = [];
         
@@ -168,9 +166,9 @@ export class VoxelGridLoader extends ThreeDLoader {
                         continue;
                     }
                     let materialSettings: THREE.MeshBasicMaterialParameters = {
-                        wireframe: true,
-                        transparent: true,
-                        opacity: 0.3,
+                        wireframe: meshBasicMaterialParams && meshBasicMaterialParams.wireframe ? meshBasicMaterialParams.wireframe : true,
+                        transparent: meshBasicMaterialParams && meshBasicMaterialParams.transparent ? meshBasicMaterialParams.transparent : true,
+                        opacity: meshBasicMaterialParams && meshBasicMaterialParams.opacity ? meshBasicMaterialParams.opacity : 0.3,
                         // Orange desity
                         color: new THREE.Color(1, 0.7-0.25*voxelgrid[i][j][k], 0)
                     }
@@ -187,6 +185,15 @@ export class VoxelGridLoader extends ThreeDLoader {
         return meshes;
     }
 
+    static get DefaultVoxelParams(): THREE.MeshBasicMaterialParameters {
+        return {
+            side: THREE.DoubleSide,
+            vertexColors: THREE.VertexColors,
+            transparent: true,
+            opacity: 1,
+            wireframe: true,
+        }
+    }
 
 }
 

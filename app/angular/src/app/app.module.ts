@@ -7,7 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { CameraGuiService } from './camera-gui.service';
+import { DatGuiService } from './dat-gui.service';
 import { SegmentationModule } from './segmentation/segmentation.module';
 import { CameraModule } from './camera/camera.module';
 import { ControlPanelModule } from './controlPanel/control-panel.module';
@@ -33,7 +33,7 @@ import { NavModule } from './nav/nav.module';
   ],
   providers: [
     AppService,
-    CameraGuiService,
+    DatGuiService,
     MainViewService
   ],
   bootstrap: [AppComponent]

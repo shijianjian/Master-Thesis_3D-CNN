@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
 import { MeshBasicMaterial, PointsMaterial, Points, Mesh, Vector3 } from 'three';
 
-import { CameraGuiService } from '../camera-gui.service';
+import { DatGuiService } from '../dat-gui.service';
 import { GuiControllerTypes, GuiParameters } from '../model/GUI';
 import { PointCloudLoader, VoxelGridLoader } from './util/pointcloud-loader';
 import { CameraParams, CanvasSettings } from '../model/visual-settings';
@@ -37,8 +37,8 @@ export class CameraNativeComponent implements OnChanges {
     @ViewChild('container')
     private containerRef: ElementRef;
     
-    constructor(private $cameraGui: CameraGuiService) {
-        this.$cameraGui.controllers.subscribe((param: GuiParameters) => {
+    constructor(private $datGui: DatGuiService) {
+        this.$datGui.controllers.subscribe((param: GuiParameters) => {
             if (this.figure && (this.figure as Points).type == "Points") {
                 (<PointsMaterial>(this.figure as Points).material).setValues({
                     size: param.size,
@@ -116,6 +116,7 @@ export class CameraNativeComponent implements OnChanges {
     private onControlChangeEvent = (event) => {
         this.render(this.scene, this.camera);
     };
+
     private onWindowResizeEvent = (event) => {
         this.onWindowResize(this.camera);
     }
@@ -143,11 +144,19 @@ export class CameraNativeComponent implements OnChanges {
     private initScene(data: number[][] | number[][][]): void {
         if (typeof data[0][0] == 'number') {
             let geometry = PointCloudLoader.getPointsGeometry((data as number[][]));
-            let figure = PointCloudLoader.loadPoints(geometry);
+            let figure = PointCloudLoader.loadPoints(geometry, {
+                size: this.$datGui.getParameters.size,
+                vertexColors: THREE.VertexColors,
+                transparent: true,
+                opacity: this.$datGui.getParameters.opacity
+            });
             this.figure = figure;
             this.scene.add(figure);
         } else if (typeof data[0][0][0] == 'number') {
-            let meshes = VoxelGridLoader.getVoxelMeshes((data as number[][][]));
+            let meshes = VoxelGridLoader.getVoxelMeshes((data as number[][][]), {
+                opacity: this.$datGui.getParameters.opacity,
+                wireframe: this.$datGui.getParameters.wireframe
+            });
             this.figure = meshes;
             meshes.forEach(mesh => {
                 this.scene.add(mesh);

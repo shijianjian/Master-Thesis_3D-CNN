@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild, ElementRef, Output, HostBinding } from '@angular/core';
 import { MatTabChangeEvent, MatMenuTrigger, MatSliderChange } from '@angular/material';
 
-import { VoxelGridLoader } from '../camera/util/pointcloud-loader';
+import { VoxelGridLoader, PointCloudLoader } from '../camera/util/pointcloud-loader';
 import { CameraNativeComponent } from '../camera/camera-native.component';
 import { CanvasSettings } from '../model/visual-settings';
 import { MainViewService } from '../main-view.service';
 import { PointCloudPostProcess } from '../camera/util/pointcloud-post-process';
 import { DataPanelComponent } from './data-panel.component';
+import { DatGuiService } from '../dat-gui.service';
 
 @Component({
 	selector: 'app-main-view',
@@ -44,7 +45,10 @@ export class MainViewComponent implements OnInit, OnChanges {
     @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
     @ViewChild("form") formCom: DataPanelComponent;
 
-    constructor(private _mainViewService: MainViewService) {}
+    constructor(
+        private _mainViewService: MainViewService,
+        private $datGui: DatGuiService
+    ) {}
 
     ngOnInit() {
         this._mainViewService.pointcloud.subscribe(data => {
@@ -65,7 +69,12 @@ export class MainViewComponent implements OnInit, OnChanges {
     }
 
     onReset() {
-        this.onOutputPoints(this.origPoints);
+        this.onOutputPoints(Array.from(this.origPoints));
+        this.$datGui.setControlParams({
+            size: PointCloudLoader.DefaultPointsParams.size,
+            opacity: PointCloudLoader.DefaultPointsParams.opacity,
+            wireframe: VoxelGridLoader.DefaultVoxelParams.wireframe
+        });
     }
 
     onOutputPoints(e: number[][]) {

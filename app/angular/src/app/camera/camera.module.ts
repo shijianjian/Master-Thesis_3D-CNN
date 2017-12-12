@@ -8,7 +8,6 @@ import { CameraDialogComponent } from './camera-dialog.componnet';
 import { CameraDialogViewerComponent } from './camera-dialog-viewer.component';
 import { CameraPanelComponent } from './camera-panel.component';
 
-
 @NgModule({
   declarations: [
     CameraNativeComponent,
