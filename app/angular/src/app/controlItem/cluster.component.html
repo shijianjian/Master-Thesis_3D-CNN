@@ -8,7 +8,9 @@
         </mat-option>
     </mat-select>
 </mat-form-field>
-<app-cluster-form #clusterForm></app-cluster-form>
+<app-form-builder 
+    [fieldModel]="formfields"
+    #clusterForm></app-form-builder>
 <div style="float:right;" >
     <mat-spinner diameter="35" *ngIf="running"></mat-spinner>
     <input 

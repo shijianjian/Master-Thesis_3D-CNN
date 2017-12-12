@@ -3,9 +3,11 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
 
 import { AppService } from '../app.service';
-import { Algorithm, DBSCAN, MeanShift, KMeans } from './model/ClusterModel';
-import { ClusterFormComponent } from './formBuilder/cluster-form.component';
+import { Cluster, DBSCAN, MeanShift, KMeans } from './model/ClusterModel';
 import { MainViewService } from '../main-view.service';
+import { FormField } from '../common/formbuilder/model/FormModel';
+import { ClusterAlgorithmSettings } from './model/cluster-form-settings';
+import { FormBuilderComponent } from '../common/formbuilder/form-builder.component';
 
 @Component({
   selector: 'app-cluster',
@@ -21,8 +23,9 @@ export class ClusterComponent {
 
     @Output() segmented = new EventEmitter<JSON>();
 
-    @ViewChild('clusterForm') clusterForm: ClusterFormComponent
+    @ViewChild('clusterForm') clusterForm: FormBuilderComponent
 
+    formfields: FormField.FieldModel;
     models: string[];
     selected: string;
     private points: number[][];
@@ -32,37 +35,46 @@ export class ClusterComponent {
       private $appService: AppService,
       private _mainViewService: MainViewService
     ) {
-      this.models = Object.keys(Algorithm.Cluster.Names)
-                          .filter(key => typeof Algorithm.Cluster.Names[key] == 'string');
+      this.models = Object.keys(Cluster.Names)
+                          .filter(key => typeof Cluster.Names[key] == 'string');
       this._mainViewService.pointcloud.subscribe(data => {
           this.points = data;
       })
     }
 
     onSelected(e: MatSelectChange) {
-      this.selected = Algorithm.Cluster.Names[e.value];
-      this.clusterForm.onChangeAlgorithm(Algorithm.Cluster.Names[e.value]);
+      this.selected = Cluster.Names[e.value];
+      this.onChangeAlgorithm(Cluster.Names[e.value]);
     }
 
-    private get output(): Algorithm.Cluster.Output {
+    onChangeAlgorithm(algorithm: string) {
+      let settings: FormField.FieldModel = ClusterAlgorithmSettings.find((value, index, arr)=> {
+          if (value.name == algorithm) {
+              return true;
+          }
+      });
+      this.formfields = settings;
+    }
+
+    private get output(): Cluster.Output {
       let settings = {};
       for (let key in this.clusterForm.form.controls) {
         settings[key] = this.clusterForm.form.controls[key].value;
       }
-      switch (Algorithm.Cluster.Names[this.selected]) {
-        case Algorithm.Cluster.Names.DBSCAN:
+      switch (Cluster.Names[this.selected]) {
+        case Cluster.Names.DBSCAN:
           return { 
-            name: Algorithm.Cluster.Names.DBSCAN,
+            name: Cluster.Names.DBSCAN,
             cluster: (settings as DBSCAN.Fields) 
           };
-        case Algorithm.Cluster.Names.MEANSHIFT:
+        case Cluster.Names.MEANSHIFT:
           return { 
-            name: Algorithm.Cluster.Names.MEANSHIFT,
+            name: Cluster.Names.MEANSHIFT,
             cluster: (settings as MeanShift.Fields) 
           };
-        case Algorithm.Cluster.Names.KMEANS:
+        case Cluster.Names.KMEANS:
           return { 
-            name: Algorithm.Cluster.Names.KMEANS,
+            name: Cluster.Names.KMEANS,
             cluster: (settings as KMeans.Fields) 
           };
         default:

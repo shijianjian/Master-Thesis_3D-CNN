@@ -2,11 +2,7 @@
     <mat-tab label="Point Cloud"></mat-tab>
     <mat-tab label="Voxel Grid"></mat-tab>
 </mat-tab-group>
-<app-camera-native 
-    #camera
-    [canvasSettings]="canvasSettings" 
-    [data]="data"></app-camera-native>
-<div class="corner-icon" id="corner-icon-group">
+<div class="corner-icon">
     <mat-icon 
         [style.visibility]="data && data.length>0 ? 'visible' : 'hidden'"
         mat-icon-button 
@@ -21,3 +17,15 @@
         </div>
     </mat-menu>
 </div>
+
+<app-camera-native 
+    [canvasSettings]="canvasSettings" 
+    [data]="data"></app-camera-native>
+
+<app-data-panel
+    #form
+    *ngIf="data && data.length>0"
+    class="container" 
+    [pointcloud]="origPoints"
+    (outputPoints)="onOutputPoints($event)"
+    ></app-data-panel>

@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 
 import { AppService } from "../app.service";
-import { Algorithm } from "../controlItem/model/ClusterModel";
+import { Cluster } from "../controlItem/model/ClusterModel";
 import { MainViewService } from "../main-view.service";
 
 @Component({
@@ -54,7 +54,7 @@ export class ControlPanelComponent implements OnInit {
         console.log(e);
     }
 
-    onSegments(event: Algorithm.Cluster.Output) {
+    onSegments(event: Cluster.Output) {
       this.$appService.getClusters(this.points, event).subscribe(data => {
           let dict: JSON = data.json();
           this.segments.emit(dict);

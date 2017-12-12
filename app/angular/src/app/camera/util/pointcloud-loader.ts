@@ -140,6 +140,7 @@ export class VoxelGridLoader extends ThreeDLoader {
     }
 
     static voxelize(pointcloud: number[][]) {
+        pointcloud = PointCloudCalculations.normalization(pointcloud);
         return PointCloudCalculations.voxelize(pointcloud);
     }
 
@@ -219,6 +220,25 @@ export namespace PointCloudCalculations {
             Y_MIN: y_min,
             Z_MIN: z_min
         }
+    }
+
+    export function normalization(pointcloud: number[][]) {
+        let ranges = findRanges(pointcloud);
+        let biggest =
+            ranges.X_MAX - ranges.X_MIN > ranges.Y_MAX - ranges.Y_MIN ? 
+            ranges.X_MAX - ranges.X_MIN : ranges.Y_MAX - ranges.Y_MIN;
+            biggest = biggest > ranges.Z_MAX - ranges.Z_MIN ?
+                      biggest : ranges.Z_MAX - ranges.Z_MIN;
+        let x, y, z;
+        let res = [];
+        for(let i=0; i<pointcloud.length; i++) {
+            x = (pointcloud[i][0]-ranges.X_MIN)/biggest;
+            y = (pointcloud[i][1]-ranges.Y_MIN)/biggest;
+            z = (pointcloud[i][2]-ranges.Z_MIN)/biggest;
+            res.push([x, y, z]);
+        }
+        ranges = findRanges(res);
+        return res;
     }
 
     /**

@@ -1,10 +1,12 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild, ElementRef, Output } from '@angular/core';
-import { MatTabChangeEvent, MatMenuTrigger } from '@angular/material';
+import { MatTabChangeEvent, MatMenuTrigger, MatSliderChange } from '@angular/material';
 
 import { VoxelGridLoader } from '../camera/util/pointcloud-loader';
 import { CameraNativeComponent } from '../camera/camera-native.component';
 import { CanvasSettings } from '../model/visual-settings';
 import { MainViewService } from '../main-view.service';
+import { PointCloudPostProcess } from '../camera/util/pointcloud-post-process';
+import { DataPanelComponent } from './data-panel.component';
 
 @Component({
 	selector: 'app-main-view',
@@ -14,6 +16,7 @@ import { MainViewService } from '../main-view.service';
             display: block;
             position: relative;
             width: 100%;
+            padding-left:2em;
         }
 	`]
 })
@@ -23,16 +26,19 @@ export class MainViewComponent implements OnInit, OnChanges {
     @Output() segmented = new EventEmitter<number[][][]>();
     data: number[][] | number[][][];
 
-    pointcloud: number[][];
+    origPoints: number[][];
+    private pointcloud: number[][];
     private voxelgrid: number[][][];
     currentTab: number;
 
     @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+    @ViewChild("form") formCom: DataPanelComponent;
 
     constructor(private _mainViewService: MainViewService) {}
 
     ngOnInit() {
-        this._mainViewService.pointcloud.subscribe( data => {
+        this._mainViewService.pointcloud.subscribe(data => {
+            this.origPoints = data;
             this.pointcloud = data;
             this.voxelgrid = undefined;
             this.ngOnChanges();
@@ -40,6 +46,16 @@ export class MainViewComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges() {
+        this.onSelectionChanged({
+            index: this.currentTab ? this.currentTab : 0,
+            tab: null
+        });
+        this.formCom ? this.formCom.reset() : null;
+    }
+
+    onOutputPoints(e: number[][]) {
+        this.pointcloud = e;
+        this.voxelgrid = VoxelGridLoader.voxelize(e);
         this.onSelectionChanged({
             index: this.currentTab ? this.currentTab : 0,
             tab: null
@@ -53,13 +69,13 @@ export class MainViewComponent implements OnInit, OnChanges {
         }
         this.segmented.emit(segs);
         this.trigger.closeMenu();
-	}
+    } 
 
     onSelectionChanged(event: MatTabChangeEvent) {
         this.currentTab = event.index;
         if (this.pointcloud && event.index == 0) {
             // Point Cloud
-            this.data = this.pointcloud
+            this.data = this.pointcloud;
         } else if (this.pointcloud && event.index == 1) {
             // Voxel Grid
             if(!this.voxelgrid) {

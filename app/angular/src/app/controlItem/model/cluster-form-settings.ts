@@ -1,36 +1,13 @@
-import { Injectable } from "@angular/core";
-import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { Algorithm, KMeans, MeanShift, DBSCAN } from "../model/ClusterModel";
+import { Cluster, KMeans, MeanShift, DBSCAN } from "../model/ClusterModel";
+import { FormField } from "../../common/formbuilder/model/FormModel";
 
-@Injectable()
-export class ClusterBuilderService {
-
-    constructor() { }
-    
-    toFormGroup(fields: Algorithm.Field[]): FormGroup {
-        let group: any = {};
-
-        fields.forEach(field => {
-            let validators = [];
-            if (field.required) { validators.push(Validators.required); }
-            if (typeof field.min == 'number') { validators.push(Validators.min(field.min)); }
-            if (typeof field.max == 'number') { validators.push(Validators.max(field.max)); }
-            let defaultValue = typeof field.default != 'undefined' ? field.default : '';
-            group[field.name] = new FormControl(defaultValue, validators);
-        });
-
-        return new FormGroup(group);
-    }
-
-}
-
-export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
+export const ClusterAlgorithmSettings: FormField.FieldModel[] = [
     {
-        name: Algorithm.Cluster.Names.DBSCAN,
+        name: Cluster.Names.DBSCAN,
         fields: [
             {
                 name: DBSCAN.FieldControllNames.EPSILON,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 0.02,
                 min: 0,
                 max: 0.5,
@@ -39,7 +16,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: DBSCAN.FieldControllNames.MIN_POINTS,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 10,
                 min: 0,
                 max: 10000,
@@ -48,7 +25,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: DBSCAN.FieldControllNames.ALGORITHM,
-                type: Algorithm.FieldType.SELECTOR,
+                type: FormField.FieldType.SELECTOR,
                 placeholder: 'Select Algorithm',
                 default: DBSCAN.Algorithm.BALLTREE,
                 options: [
@@ -61,18 +38,18 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
         ]
     },
     {
-        name: Algorithm.Cluster.Names.MEANSHIFT,
+        name: Cluster.Names.MEANSHIFT,
         fields: [
             {
                 name: MeanShift.FieldControllNames.BANDWIDTH,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 0,
                 hint: "Auto set bandwidth if set it to 0.",
                 placeholder: 'BandWidth'
             },
             {
                 name: MeanShift.FieldControllNames.MAX_ITER,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 300,
                 min: 0,
                 max: 10000,
@@ -82,11 +59,11 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
         ]
     },
     {
-        name: Algorithm.Cluster.Names.KMEANS,
+        name: Cluster.Names.KMEANS,
         fields: [
             {
                 name: KMeans.FieldControllNames.N_CLUSTERS,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 5,
                 min: 0,
                 max: 100,
@@ -95,7 +72,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: KMeans.FieldControllNames.MAX_ITER,
-                type: Algorithm.FieldType.SLIDER,
+                type: FormField.FieldType.SLIDER,
                 default: 50,
                 min: 50,
                 max: 3000,
@@ -104,7 +81,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: KMeans.FieldControllNames.INIT,
-                type: Algorithm.FieldType.SELECTOR,
+                type: FormField.FieldType.SELECTOR,
                 placeholder: 'Select Init Method',
                 default: KMeans.InitMethod.KMEANSPLUSPLUS,
                 options: [
@@ -114,7 +91,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: KMeans.FieldControllNames.PRECOMPUTE_DISTANCES,
-                type: Algorithm.FieldType.SELECTOR,
+                type: FormField.FieldType.SELECTOR,
                 placeholder: 'Enable Precompute Distance',
                 default: KMeans.PrecomputeDistance.AUTO,
                 options: [
@@ -125,7 +102,7 @@ export const ClusterAlgorithmSettings: Algorithm.FieldModel[] = [
             },
             {
                 name: KMeans.FieldControllNames.ALGORITHM,
-                type: Algorithm.FieldType.SELECTOR,
+                type: FormField.FieldType.SELECTOR,
                 placeholder: 'K-Means Algorithm',
                 default: KMeans.Algorithm.AUTO,
                 options: [

@@ -14,7 +14,6 @@ export class CameraDialogComponent implements OnInit {
     content: ElementRef;
 
     camera: CameraNativeComponent;
-    processor: PointCloudPostProcess;
     noise = 0;
 
     voxelgrid;
@@ -30,7 +29,6 @@ export class CameraDialogComponent implements OnInit {
         console.log(this.data);
         this.camera = this.data.camera;
         this.content.nativeElement.append(this.data.element);
-        this.processor = new PointCloudPostProcess(this.data.pointcloud);
         // fire resize camera
         window.dispatchEvent(new Event('resize'));
     }
@@ -53,8 +51,8 @@ export class CameraDialogComponent implements OnInit {
     }
 
     onNoisy(e: MatSliderChange) {
-        let noisy = this.processor.addGaussianNoise(e.value/100);
-        this.camera.data = noisy;
+        // let noisy = PointCloudPostProcess.addGaussianNoise(this.data.pointcloud, e.value/100);
+        // this.camera.data = noisy;
         this.camera.ngOnChanges();
     }   
 
