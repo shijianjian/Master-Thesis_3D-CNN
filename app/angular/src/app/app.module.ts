@@ -1,19 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { MatSidenavModule, MatToolbarModule } from '@angular/material';
-import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
 
+import { routing } from './app.routes';
 import { AppComponent } from './app.component';
-import { AppService } from './app.service';
-import { DatGuiService } from './dat-gui.service';
-import { SegmentationModule } from './segmentation/segmentation.module';
-import { CameraModule } from './camera/camera.module';
-import { ControlPanelModule } from './controlPanel/control-panel.module';
-import { MainPanelModule } from './mainPanel/main-panel.module';
-import { MainViewService } from './main-view.service';
-import { NavModule } from './nav/nav.module';
+import { HomeModule } from './home/home.module';
+import { PredictionPageModule } from './prediction/prediction-page.module';
+import { TrainingPageModule } from './training/training-page.module';
 
 @NgModule({
   declarations: [
@@ -21,20 +13,12 @@ import { NavModule } from './nav/nav.module';
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
-    HttpModule,
-    HttpClientModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MainPanelModule,
-    SegmentationModule,
-    ControlPanelModule,
-    NavModule
+    routing,
+    HomeModule,
+    PredictionPageModule,
+    TrainingPageModule
   ],
   providers: [
-    AppService,
-    DatGuiService,
-    MainViewService
   ],
   bootstrap: [AppComponent]
 })

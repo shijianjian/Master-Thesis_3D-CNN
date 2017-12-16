@@ -8,7 +8,7 @@ import { CameraModule } from '../camera/camera.module';
 import { PredictionComponent } from "./prediction.component";
 import { ControlItemModule } from '../controlItem/control-item.module';
 import { DataPanelComponent } from './data-panel.component';
-import { CommonsModule } from '../common/commons.module';
+import { CommonsModule } from '../../common/commons.module';
 
 @NgModule({
   declarations: [

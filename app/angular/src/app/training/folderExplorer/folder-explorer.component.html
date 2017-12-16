@@ -1,0 +1,18 @@
+<h3>Folders</h3>
+<mat-card style="width: 100%; height: 100%; overflow-y:scroll;">
+    <mat-list>
+        <form novalidate *ngIf="structure && structure.length > 0" [formGroup]="form">
+            <ng-container *ngFor="let folder of structure">
+                <mat-list-item>
+                    <mat-checkbox 
+                        (change)="onChange()" 
+                        [formControlName]="folder.name"></mat-checkbox>
+                    <mat-icon mat-list-icon>folder</mat-icon>
+                    <h4 mat-line>{{folder.name | titlecase }}</h4>
+                    <p mat-line>Files: {{folder.size}}</p>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+        </ng-container>
+        </form>
+    </mat-list>
+</mat-card>

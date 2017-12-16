@@ -4,12 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from "rxjs/Observable";
 import { map } from 'rxjs/operators';
 
-import { baseUrl } from "./settings";
+import { baseUrl } from "../settings";
 import { Cluster, DBSCAN, MeanShift } from "./controlItem/model/ClusterModel";
 import { Subject, BehaviorSubject } from "rxjs";
 
 @Injectable()
-export class AppService {
+export class PredictionService {
 
     selectedModel: Subject<string> = new BehaviorSubject<string>(null);
     

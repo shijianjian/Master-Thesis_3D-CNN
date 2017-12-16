@@ -1,4 +1,4 @@
-import { FormField } from "../../common/formbuilder/model/FormModel";
+import { FormField } from "../../../common/formbuilder/model/FormModel";
 import { PointsReshape, GaussianNoise, Squeeze } from "./../model/PointsReshape";
 
 export const ClusterAlgorithmSettings: FormField.FieldModel[] = [

@@ -1,5 +1,5 @@
 import { Cluster, KMeans, MeanShift, DBSCAN } from "../model/ClusterModel";
-import { FormField } from "../../common/formbuilder/model/FormModel";
+import { FormField } from "../../../common/formbuilder/model/FormModel";
 
 export const ClusterAlgorithmSettings: FormField.FieldModel[] = [
     {

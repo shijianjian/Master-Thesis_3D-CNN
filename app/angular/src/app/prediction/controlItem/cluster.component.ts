@@ -2,12 +2,12 @@ import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
 
-import { AppService } from '../app.service';
+import { PredictionService } from '../prediction.service';
 import { Cluster, DBSCAN, MeanShift, KMeans } from './model/ClusterModel';
 import { MainViewService } from '../main-view.service';
-import { FormField } from '../common/formbuilder/model/FormModel';
+import { FormField } from '../../common/formbuilder/model/FormModel';
 import { ClusterAlgorithmSettings } from './model/cluster-form-settings';
-import { FormBuilderComponent } from '../common/formbuilder/form-builder.component';
+import { FormBuilderComponent } from '../../common/formbuilder/form-builder.component';
 
 @Component({
   selector: 'app-cluster',
@@ -32,7 +32,7 @@ export class ClusterComponent {
     running: boolean = false;
 
     constructor(
-      private $appService: AppService,
+      private $predictionService: PredictionService,
       private _mainViewService: MainViewService
     ) {
       this.models = Object.keys(Cluster.Names)
@@ -84,7 +84,7 @@ export class ClusterComponent {
 
     onSegment() {
       this.running = true;
-      this.$appService.getClusters(this.points, this.output).subscribe(
+      this.$predictionService.getClusters(this.points, this.output).subscribe(
         data => {
           let dict: JSON = data.json();
           this.segmented.emit(dict);

@@ -1,0 +1,15 @@
+<app-nav></app-nav>
+
+<div class="row" style="padding: 1em;">
+    <app-folder-explorer 
+        [structure]="structure"
+        (selection)="onSelected($event)"
+        style="height:80vh; display:block;" 
+        class="col-sm-4"></app-folder-explorer>
+
+    <app-folder-plot
+        [structure]="structure"
+        [selection]="selection"
+        style="padding-left: 10px;"
+        class="col-sm-8"></app-folder-plot>
+</div>

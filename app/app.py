@@ -11,8 +11,8 @@ from werkzeug.utils import secure_filename
 
 from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
-from cnn.plot.camera_config import plot_voxel_points
 from cnn.prediction import predict
+from cnn.training.data_process import get_folder_structure
 
 APP = Flask(__name__)
 CORS(APP)
@@ -172,12 +172,12 @@ def prediction():
         if len(pointcloud.shape) == 2:
             vox = voxelize3D(pointcloud, dim=[32, 32, 32])
             vox_chan = np.array(vox).reshape(vox.shape + (1, ))
-            tidied_points.append(vox_chan);
+            tidied_points.append(vox_chan)
         elif len(pointcloud.shape) == 3:
             for _, val in enumerate(pointcloud):
                 vox = voxelize3D(pointcloud, dim=[32, 32, 32])
                 vox_chan = np.array(vox).reshape(vox.shape + (1, ))
-                tidied_points.append(vox_chan);
+                tidied_points.append(vox_chan)
         else:
             return APP.response_class(
                 response='Invalid points',
@@ -201,7 +201,6 @@ def prediction():
             status=200,
             mimetype='application/json'
         )
-
 
 
 @APP.route('/upload', methods=['GET', 'POST', 'OPTIONS'])
@@ -230,54 +229,23 @@ def upload_file():
     return index()
 
 
-# @APP.route('/plot/settings', methods=['POST'])
-# @cross_origin()
-# def render():
-#     """
-#     Calculate camera settings.
-
-#     points: recives XYZ coordinates.
-#     """
-#     if request.method == 'POST':
-#         import ast
-
-#         # convert string to 2d numpy array
-#         pointcloud = request.form['pointcloud']
-#         pointcloud = ast.literal_eval(pointcloud)
-#         normalized_cloud = np.asarray(norm_point(pointcloud))
-
-#         voxels_plots = None
-#         name = None
-#         grid_size = None
-#         try:
-#             name = request.form['name']
-#             grid_size = request.form['grid_size']
-#         except Exception as e:
-#             print(e)
-
-#         if grid_size is not None:
-#             grid_size = ast.literal_eval(grid_size)
-#             voxels = voxelize3D(normalized_cloud, dim=[grid_size[0],grid_size[1], grid_size[2]])
-#             voxels_plots = plot_voxel_points(voxels, None, filename=None)
-        
-#         res = {
-#             'pointcloud': plot_voxel_points(None, normalized_cloud, filename=name),
-#             'voxelgrid': voxels_plots
-#         }
-
-#         return APP.response_class(
-#             response=json.dumps(res),
-#             status=200,
-#             mimetype='application/json'
-#         )
-
-
 def allowed_file(filename):
     """
     Filter files according to file extensions.
     """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@APP.route('/folder_structure', methods=['GET'])
+@cross_origin()
+def folder_structure():
+    res = get_folder_structure()
+    return APP.response_class(
+            response=json.dumps(res),
+            status=200,
+            mimetype='application/json'
+        )
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ import { FileUploadModule } from 'ng2-file-upload';
 import { ModelSelectorComponent } from './model-selector.component';
 import { ClusterComponent } from './cluster.component';
 import { FileUploaderComponent } from './file-uploader.component';
-import { CommonsModule } from '../common/commons.module';
+import { CommonsModule } from '../../common/commons.module';
 
 @NgModule({
   declarations: [

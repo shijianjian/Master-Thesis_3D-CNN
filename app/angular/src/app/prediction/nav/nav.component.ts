@@ -1,8 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import { Router } from '@angular/router';
+
 import { PointCloudFile } from '../controlItem/model/FileModel';
 import { MainViewService } from '../main-view.service';
 import { DatGuiService } from '../dat-gui.service';
 import { PointCloudLoader, VoxelGridLoader } from '../camera/util/pointcloud-loader';
+
 
 @Component({
   selector: 'app-nav',
@@ -17,11 +20,16 @@ export class NavComponent {
 
     constructor(
         private _mainViewService: MainViewService,
-        private $datGui: DatGuiService
+        private $datGui: DatGuiService,
+        private _router: Router
     ) {}
 
     onMenu() {
         this.menuToggle.emit(true);
+    }
+    
+    onClick() {
+        this._router.navigateByUrl('/');
     }
 
     onUploaded(e: PointCloudFile) {

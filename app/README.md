@@ -4,6 +4,7 @@
 - npm
 - @angular/cli
 - python
+- Training data. Sample training data can be found [here](http://web.stanford.edu/~ericyi/project_page/part_annotation/index.html). Please copy it under 'PartAnnotation'.
 - A trained model, put it under '/trained_model' folder along with a label file. For example:
 ~~~
 app --
@@ -15,7 +16,17 @@ app --
 ~~~
 Within the .label file, simply given a list of class labels which are corresponding to the output from provided model.
 
+#### Dependencies
+- [PyntCloud](http://pyntcloud.readthedocs.io/en/latest/installation.html)
+- [flask](http://flask.pocoo.org)
+
 #### How to run
+Before running:
+~~~
+$ cd angular
+$ npm install
+~~~
+
 
 For running:
 ~~~

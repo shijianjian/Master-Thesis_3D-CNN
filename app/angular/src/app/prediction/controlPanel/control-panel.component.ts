@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 
-import { AppService } from "../app.service";
+import { PredictionService } from "../prediction.service";
 import { Cluster } from "../controlItem/model/ClusterModel";
 import { MainViewService } from "../main-view.service";
 
@@ -29,7 +29,7 @@ export class ControlPanelComponent implements OnInit {
     points: number[][];
 
     constructor(
-        private $appService: AppService,
+        private $predictionService: PredictionService,
         private _mainViewService: MainViewService
     ) {
         this._mainViewService.pointcloud.subscribe(data => {
@@ -38,7 +38,7 @@ export class ControlPanelComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.$appService.getModels().subscribe( data => {
+        this.$predictionService.getModels().subscribe( data => {
             let models = data.json();
             if (models.length > 0) {
                 this.models = Array.from(models);
@@ -47,7 +47,7 @@ export class ControlPanelComponent implements OnInit {
     }
 
     onSelected(e: string) {
-        this.$appService.selectedModel.next(e);
+        this.$predictionService.selectedModel.next(e);
     }
 
     onBackdropClick(e){
@@ -55,7 +55,7 @@ export class ControlPanelComponent implements OnInit {
     }
 
     onSegments(event: Cluster.Output) {
-      this.$appService.getClusters(this.points, event).subscribe(data => {
+      this.$predictionService.getClusters(this.points, event).subscribe(data => {
           let dict: JSON = data.json();
           this.segments.emit(dict);
         }

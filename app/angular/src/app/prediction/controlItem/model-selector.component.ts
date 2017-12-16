@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { MatSelectChange } from "@angular/material";
-import { AppService } from "../app.service";
+import { PredictionService } from "../prediction.service";
 
 @Component({
     selector: 'app-model-selector',
@@ -15,12 +15,12 @@ export class ModelSelectorComponent {
 
     models;
     constructor(
-        private $appService: AppService
+        private $predictionService: PredictionService
     ) {
     }
 
     ngOnInit() {
-        this.$appService.getModels().subscribe( data => {
+        this.$predictionService.getModels().subscribe( data => {
             let models = data.json();
             if (models.length > 0) {
                 this.models = Array.from(models);
@@ -29,6 +29,6 @@ export class ModelSelectorComponent {
     }
 
     onSelected(e: MatSelectChange) {
-        this.$appService.selectedModel.next(e.value);
+        this.$predictionService.selectedModel.next(e.value);
     }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 
-import { AppService } from '../app.service';
+import { PredictionService } from '../prediction.service';
 
 @Component({
   selector: 'app-prediction',
@@ -22,10 +22,10 @@ export class PredictionComponent implements OnInit {
 
     private model: string;
 
-    constructor(private $appService: AppService) {}
+    constructor(private $predictionService: PredictionService) {}
 
     ngOnInit() {
-      this.$appService.selectedModel.subscribe(model => {
+      this.$predictionService.selectedModel.subscribe(model => {
         if (model == null || typeof model == 'undefined') {
           this.disableBtn = true;
         } else {
@@ -37,7 +37,7 @@ export class PredictionComponent implements OnInit {
     
     predict() {
         this.running = true;
-        this.$appService.predict(this.points, this.model).subscribe((data) => {
+        this.$predictionService.predict(this.points, this.model).subscribe((data) => {
             this.result = data.json();
             this.prediction.emit(this.result);
             this.running = false;
