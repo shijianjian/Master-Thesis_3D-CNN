@@ -1,0 +1,40 @@
+<button 
+    (click)="onClick()"
+    [hidden]="showPanel"
+    mat-raised-button 
+    color="primary">Filter</button>
+
+<mat-card *ngIf="showPanel">
+    <section class="row">
+        <mat-form-field class="col-sm-6">
+            <input matInput type="number" 
+                [(ngModel)]="minNumber"
+                (keyup.enter)="onFilter()"
+                step= "1"
+                [min]="min"
+                [max]="max"
+                placeholder="Min">
+        </mat-form-field>
+        <mat-form-field class="col-sm-6">
+            <input matInput type="number" 
+                [(ngModel)]="maxNumber"
+                (keyup.enter)="onFilter()"
+                step= "1"
+                [min]="min"
+                [max]="max"
+                placeholder="Max">
+        </mat-form-field>
+    </section>
+    <section>
+        <div>Valid File Extensions:</div>
+        <mat-checkbox 
+            [(ngModel)]="ptsExt">*.pts</mat-checkbox>
+        <mat-checkbox 
+            [(ngModel)]="ptxExt">*.ptx</mat-checkbox>
+    </section>
+    <button
+        style="float: right;"
+        (click)="onConfirm()"
+        mat-raised-button 
+        color="primary">Confirm</button>
+</mat-card>

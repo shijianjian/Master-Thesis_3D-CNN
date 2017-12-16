@@ -1,0 +1,9 @@
+<mat-checkbox 
+    (change)="onChange($event, 1)" 
+    [checked]="settings.noise.enabled">Gaussian Noise</mat-checkbox>
+<mat-checkbox 
+    (change)="onChange($event, 2)"
+    [checked]="settings.squeeze.enabled">Squeeze</mat-checkbox>
+<mat-checkbox 
+    (change)="onChange($event, 3)"
+    [checked]="settings.rotate.enabled">Rotation</mat-checkbox>

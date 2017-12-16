@@ -1,16 +1,20 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MatListModule, MatIconModule, MatCheckboxModule, MatCardModule } from '@angular/material';
+import { MatListModule, MatIconModule, MatButtonModule, MatCheckboxModule, 
+         MatCardModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule,
+         MatSliderModule } from '@angular/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { FolderExplorerComponent} from "./folder-explorer.component";
 import { FolderPlotComponent } from "./folder-plot.component";
+import { FolderFilterComponent } from "./folder-filter.component";
 
 @NgModule({
     declarations: [
         FolderExplorerComponent,
-        FolderPlotComponent
+        FolderPlotComponent,
+        FolderFilterComponent
     ],
     imports: [
         BrowserModule,
@@ -20,7 +24,10 @@ import { FolderPlotComponent } from "./folder-plot.component";
         MatListModule,
         MatIconModule,
         MatCardModule,
-        MatCheckboxModule
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCheckboxModule,
     ],
     exports: [
         FolderExplorerComponent,

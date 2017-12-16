@@ -2,6 +2,11 @@
 <mat-card style="width: 100%; height: 100%; overflow-y:scroll;">
     <mat-list>
         <form novalidate *ngIf="structure && structure.length > 0" [formGroup]="form">
+            <app-folder-filter
+                [max]="maxNumber"
+                [min]="minNumber"
+                (filter)="onFilter($event)"
+                ></app-folder-filter>
             <ng-container *ngFor="let folder of structure">
                 <mat-list-item>
                     <mat-checkbox 

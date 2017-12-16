@@ -7,9 +7,18 @@
         style="height:80vh; display:block;" 
         class="col-sm-4"></app-folder-explorer>
 
-    <app-folder-plot
-        [structure]="structure"
-        [selection]="selection"
-        style="padding-left: 10px;"
-        class="col-sm-8"></app-folder-plot>
+    <div class="col-sm-8" style="padding-left: 10px;">
+        <app-folder-plot
+            [structure]="structure"
+            [selection]="selection"
+            [selectedSize]="selectedSize"
+            [useDataAug]="useDataAug"
+            ></app-folder-plot>
+        <app-training-panel
+            style="margin-top: 10px;"
+            [structure]="structure"
+            [selection]="selection"
+            [max]="max"
+            (settings)="onSettings($event)"></app-training-panel>
+    </div>
 </div>

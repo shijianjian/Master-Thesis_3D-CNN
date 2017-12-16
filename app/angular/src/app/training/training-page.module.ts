@@ -7,6 +7,7 @@ import { TrainingPageComponent } from "./training-page.component";
 import { NavModule } from "./nav/nav.module";
 import { FolderExplorerModule } from "./folderExplorer/folder-explorer.module";
 import { TraningService } from "./traning.service";
+import { TrainingPanelModule } from "./trainingPanel/training-panel.module";
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import { TraningService } from "./traning.service";
         BrowserAnimationsModule,
         HttpClientModule,
         NavModule,
-        FolderExplorerModule
+        FolderExplorerModule,
+        TrainingPanelModule
     ],
     providers: [
         TraningService
