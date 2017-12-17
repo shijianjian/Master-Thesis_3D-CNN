@@ -3,8 +3,8 @@ import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatSliderModule, MatFormFieldModule, MatInputModule, MatSelectModule } from "@angular/material";
 
-import { FormBuilderService } from "./formbuilder/form-builder.service";
-import { FormBuilderComponent } from "./formbuilder/form-builder.component";
+import { FormBuilderService } from "./form-builder.service";
+import { FormBuilderComponent } from "./form-builder.component";
 
 @NgModule({
     declarations: [
@@ -26,4 +26,4 @@ import { FormBuilderComponent } from "./formbuilder/form-builder.component";
         FormBuilderService
     ]
 })
-export class CommonsModule {}
+export class FormBuilderModule {}

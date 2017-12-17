@@ -1,17 +1,17 @@
 import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { Router } from '@angular/router';
 
-import { PointCloudFile } from '../controlItem/model/FileModel';
-import { MainViewService } from '../main-view.service';
-import { DatGuiService } from '../dat-gui.service';
-import { PointCloudLoader, VoxelGridLoader } from '../camera/util/pointcloud-loader';
+import { PointCloudFile } from '../../common/pointcloudUploader/model/FileModel';
+import { DatGuiService } from '../../common/camera/dat-gui.service';
+import { PointCloudLoader, VoxelGridLoader } from '../../common/camera/util/pointcloud-loader';
+import { PredictionService } from '../prediction.service';
 
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './nav.component.html'
+  selector: 'app-prediction-nav',
+  templateUrl: './prediction-nav.component.html'
 })
-export class NavComponent {
+export class PredictionNavComponent {
 
     @Input() showMenu: boolean = false;
     points: number[][];
@@ -19,26 +19,22 @@ export class NavComponent {
     @Output() menuToggle = new EventEmitter<boolean>();
 
     constructor(
-        private _mainViewService: MainViewService,
-        private $datGui: DatGuiService,
-        private _router: Router
+        private $predictionService: PredictionService,
+        private $datGui: DatGuiService
     ) {}
 
     onMenu() {
         this.menuToggle.emit(true);
     }
-    
-    onClick() {
-        this._router.navigateByUrl('/');
-    }
 
     onUploaded(e: PointCloudFile) {
+        this.$predictionService.pointcloud.next(e.points);
         this.points = e.points;
         this.$datGui.openGui();
     }
 
     onReload() {
-        this._mainViewService.pointcloud.next(Array.from(this.points));
+        this.$predictionService.pointcloud.next(Array.from(this.points));
         this.$datGui.setControlParams({
             size: PointCloudLoader.DefaultPointsParams.size,
             opacity: PointCloudLoader.DefaultPointsParams.opacity,

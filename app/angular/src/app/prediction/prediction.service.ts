@@ -7,13 +7,18 @@ import { map } from 'rxjs/operators';
 import { baseUrl } from "../settings";
 import { Cluster, DBSCAN, MeanShift } from "./controlItem/model/ClusterModel";
 import { Subject, BehaviorSubject } from "rxjs";
+import { MainService } from "../main.service";
 
 @Injectable()
 export class PredictionService {
 
     selectedModel: Subject<string> = new BehaviorSubject<string>(null);
     
-    constructor(private _http: Http, private _httpClient: HttpClient) {}
+    constructor(
+        private _http: Http, 
+        private _httpClient: HttpClient,
+        private $mainService: MainService
+    ) {}
 
     getClusters(pointcloud: number[][], clusterSettings: Cluster.Output): Observable<Response> {
         let body = new FormData();
@@ -30,7 +35,11 @@ export class PredictionService {
     }
 
     getPoints(filename: string): Observable<Response> {
-        return this._http.get(`${baseUrl}/plot/points/${filename}`);
+        return this.$mainService.getPoints(filename);
+    }
+
+    get pointcloud(): Subject<number[][]> {
+        return this.$mainService.pointcloud;
     }
 
     predict(pointcloud: number[][], model: string): Observable<Response>  {

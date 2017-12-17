@@ -3,7 +3,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { MatPaginatorModule, MatTooltipModule, MatIconModule } from '@angular/material';
 
 import { SegmentationListComponent } from "./segmentation-list.component";
-import { CameraModule } from "../camera/camera.module";
+import { CameraModule } from "../../common/camera/camera.module";
 
 @NgModule({
     declarations: [

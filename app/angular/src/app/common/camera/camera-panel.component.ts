@@ -3,7 +3,7 @@ import { MatTabChangeEvent } from '@angular/material';
 
 import { VoxelGridLoader } from './util/pointcloud-loader';
 import { CameraNativeComponent } from './camera-native.component';
-import { CanvasSettings } from '../model/visual-settings';
+import { CanvasSettings } from './model/visual-settings';
 
 @Component({
 	selector: 'app-camera-panel',

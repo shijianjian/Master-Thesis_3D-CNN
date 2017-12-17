@@ -1,1 +1,1 @@
-rm -rf ./assets && rm -rf ./uploads && cd angular && ng build --aot=true && cd .. && mv ./angular/dist/* ./ && python app.py
+rm -rf ./assets && rm -rf ./uploads && cd angular && ng build && cd .. && mv ./angular/dist/* ./ && python app.py

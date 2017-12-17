@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { PredictionPageComponent } from './prediction/prediction-page.component';
 import { TrainingPageComponent } from './training/training-page.component';
+import { LaboratoryComponent } from './lab/laboratory.component';
 
 export const appRoutes: Routes = [
     { 
@@ -18,6 +19,10 @@ export const appRoutes: Routes = [
     { 
         path: 'prediction', 
         component: PredictionPageComponent, 
+    },
+    { 
+        path: 'lab', 
+        component: LaboratoryComponent, 
     },
     { 
         path: 'training', 

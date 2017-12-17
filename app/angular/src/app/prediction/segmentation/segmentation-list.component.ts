@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { PageEvent } from '@angular/material';
-import { CanvasSettings } from '../model/visual-settings';
-import { MainViewService } from '../main-view.service';
+import { CanvasSettings } from '../../common/camera/model/visual-settings';
+import { PredictionService } from '../prediction.service';
 
 @Component({
   selector: 'app-segmentation-list',
@@ -36,7 +36,7 @@ export class SegmentationListComponent implements OnChanges {
 
   running: boolean = false;
 
-  constructor(private _mainViewService: MainViewService) {}
+  constructor(private $predictionService: PredictionService) {}
 
   ngOnChanges() {
       this.selectedSegments = Array.from(this.segments.slice(0, this.pageSize));
@@ -52,7 +52,7 @@ export class SegmentationListComponent implements OnChanges {
   }
 
   onLaunch(seg: number[][]) {
-    this._mainViewService.pointcloud.next(seg);
+    this.$predictionService.pointcloud.next(seg);
   }
 
 }

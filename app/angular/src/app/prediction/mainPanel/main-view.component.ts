@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, ViewChild, ElementRef, Output, HostBinding } from '@angular/core';
 import { MatTabChangeEvent, MatMenuTrigger, MatSliderChange } from '@angular/material';
 
-import { VoxelGridLoader, PointCloudLoader } from '../camera/util/pointcloud-loader';
-import { CameraNativeComponent } from '../camera/camera-native.component';
-import { CanvasSettings } from '../model/visual-settings';
-import { MainViewService } from '../main-view.service';
-import { PointCloudPostProcess } from '../camera/util/pointcloud-post-process';
+import { VoxelGridLoader, PointCloudLoader } from '../../common/camera/util/pointcloud-loader';
+import { CameraNativeComponent } from '../../common/camera/camera-native.component';
+import { CanvasSettings } from '../../common/camera/model/visual-settings';
+import { PointCloudPostProcess } from '../../common/camera/util/pointcloud-post-process';
 import { DataPanelComponent } from './data-panel.component';
-import { DatGuiService } from '../dat-gui.service';
+import { DatGuiService } from '../../common/camera/dat-gui.service';
+import { PredictionService } from '../prediction.service';
 
 @Component({
 	selector: 'app-main-view',
@@ -46,12 +46,12 @@ export class MainViewComponent implements OnInit, OnChanges {
     @ViewChild("form") formCom: DataPanelComponent;
 
     constructor(
-        private _mainViewService: MainViewService,
+        private $predictionService: PredictionService,
         private $datGui: DatGuiService
     ) {}
 
     ngOnInit() {
-        this._mainViewService.pointcloud.subscribe(data => {
+        this.$predictionService.pointcloud.subscribe(data => {
             this.origPoints = data;
             this.pointcloud = data;
             this.voxelgrid = undefined;

@@ -4,7 +4,6 @@ import { MatSelectChange } from '@angular/material';
 
 import { PredictionService } from '../prediction.service';
 import { Cluster, DBSCAN, MeanShift, KMeans } from './model/ClusterModel';
-import { MainViewService } from '../main-view.service';
 import { FormField } from '../../common/formbuilder/model/FormModel';
 import { ClusterAlgorithmSettings } from './model/cluster-form-settings';
 import { FormBuilderComponent } from '../../common/formbuilder/form-builder.component';
@@ -32,12 +31,11 @@ export class ClusterComponent {
     running: boolean = false;
 
     constructor(
-      private $predictionService: PredictionService,
-      private _mainViewService: MainViewService
+      private $predictionService: PredictionService
     ) {
       this.models = Object.keys(Cluster.Names)
                           .filter(key => typeof Cluster.Names[key] == 'string');
-      this._mainViewService.pointcloud.subscribe(data => {
+      this.$predictionService.pointcloud.subscribe(data => {
           this.points = data;
       })
     }

@@ -2,34 +2,29 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule, MatInputModule, MatSelectModule, MatProgressSpinnerModule } from '@angular/material';
-import { FileUploadModule } from 'ng2-file-upload';
 
 import { ModelSelectorComponent } from './model-selector.component';
 import { ClusterComponent } from './cluster.component';
-import { FileUploaderComponent } from './file-uploader.component';
-import { CommonsModule } from '../../common/commons.module';
+import { FormBuilderModule } from '../../common/formbuilder/form-builder.module';
 
 @NgModule({
   declarations: [
     ModelSelectorComponent,
-    ClusterComponent,
-    FileUploaderComponent
+    ClusterComponent
   ],
   imports: [
     BrowserModule,
     FormsModule, 
     ReactiveFormsModule,
-    FileUploadModule,
     MatSelectModule,
     MatFormFieldModule, 
     MatInputModule,
     MatProgressSpinnerModule,
-    CommonsModule
+    FormBuilderModule
   ],
   exports: [
     ModelSelectorComponent,
-    ClusterComponent,
-    FileUploaderComponent
+    ClusterComponent
   ],
   providers: [
   ]

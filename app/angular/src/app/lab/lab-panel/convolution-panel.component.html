@@ -1,0 +1,64 @@
+<mat-radio-group 
+    [(ngModel)]="convChoice" 
+    style="display:flex; justify-content:space-around;">
+    <mat-radio-button value="1">Auto Generate</mat-radio-button>
+    <mat-radio-button value="2">Input By Hand</mat-radio-button>
+</mat-radio-group>
+<div *ngIf="convChoice == 1">
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                placeholder="Kernel Size x" [(ngModel)]="convSize.X">
+        </mat-form-field>
+    </div>
+    <div>
+    <mat-form-field>
+        <input matInput 
+            type="number" 
+            placeholder="Kernel Size y" [(ngModel)]="convSize.Y">
+    </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number"
+                placeholder="Kernel Size z" [(ngModel)]="convSize.Z">
+        </mat-form-field>
+    </div>
+    <button 
+        mat-raised-button 
+        style="float:right;"
+        (click)="onGenerate()" 
+        color="primary">Generate</button>
+    <div *ngIf="kernel && kernel.length>0" class="box box-default" style="max-height:25vh; overflow-y:scroll;">
+        <code>
+            <pre>{{ kernel | json }}</pre>
+        </code>
+    </div>
+</div>
+
+<div *ngIf="convChoice == 2">
+    <mat-form-field style="display:block;">
+        <textarea matInput 
+            style="box-sizing:border-box;"
+            [(ngModel)]="kernelConvert" 
+            placeholder="Enter Your Kernel Here"></textarea>
+        <mat-error *ngIf="kernelError">{{ kernelError }}</mat-error>
+    </mat-form-field>
+</div>
+<mat-form-field>
+    <input matInput type="number" placeholder="Stride" [(ngModel)]="stride">
+</mat-form-field>
+<div>
+    <mat-select placeholder="Padding" [value]="padding" (selectionChange)="onPadding($event)">
+        <mat-option *ngFor="let pad of paddingStrategy" [value]="pad">
+            {{ pad }}
+        </mat-option>
+    </mat-select>
+</div>
+<button 
+    *ngIf="kernel && kernel.length>0"
+    style="margin-top: 10px; float:right" 
+    mat-raised-button 
+    (click)="onStart()" color="primary">Start</button>

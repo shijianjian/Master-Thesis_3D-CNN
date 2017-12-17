@@ -1,0 +1,12 @@
+<div class="col-sm-12">
+    <app-camera-native
+        [data]="data"
+        ></app-camera-native>
+</div>
+
+<div style="padding-top:3em;" *ngIf="outputgrid && outputgrid.length>0" class="col-sm-12">
+    Result:
+    <app-camera-native
+        [data]="outputgrid"
+        ></app-camera-native>
+</div>

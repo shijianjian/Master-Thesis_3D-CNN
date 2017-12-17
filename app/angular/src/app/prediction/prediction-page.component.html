@@ -10,9 +10,9 @@
     </mat-sidenav>
 
     <mat-sidenav-content>
-        <app-nav 
+        <app-prediction-nav 
             [showMenu]="showMenu"
-            (menuToggle)="onMenuToggle($event)"></app-nav>
+            (menuToggle)="onMenuToggle($event)"></app-prediction-nav>
         <app-main-view
             (segmented)="onSegments($event)"
             style="max-width: 70vw;"

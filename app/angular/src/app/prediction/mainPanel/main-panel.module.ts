@@ -4,11 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule, MatTooltipModule, MatExpansionModule, MatInputModule, MatFormFieldModule, MatSliderModule, MatMenuModule, MatProgressSpinnerModule, MatIconModule } from '@angular/material';
 
 import { MainViewComponent } from './main-view.component';
-import { CameraModule } from '../camera/camera.module';
+import { CameraModule } from '../../common/camera/camera.module';
 import { PredictionComponent } from "./prediction.component";
 import { ControlItemModule } from '../controlItem/control-item.module';
 import { DataPanelComponent } from './data-panel.component';
-import { CommonsModule } from '../../common/commons.module';
+import { FormBuilderModule } from '../../common/formbuilder/form-builder.module';
 
 @NgModule({
   declarations: [
@@ -31,7 +31,7 @@ import { CommonsModule } from '../../common/commons.module';
     MatFormFieldModule,
     CameraModule,
     ControlItemModule,
-    CommonsModule
+    FormBuilderModule
   ],
   exports: [
     MainViewComponent

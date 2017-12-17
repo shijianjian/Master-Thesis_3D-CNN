@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnChanges, EventEmitter } from "@angular/core";
 import { MatSliderChange } from "@angular/material";
 
-import { PointCloudPostProcess } from "../camera/util/pointcloud-post-process";
+import { PointCloudPostProcess } from "../../common/camera/util/pointcloud-post-process";
 
 @Component({
 	selector: 'app-data-panel',

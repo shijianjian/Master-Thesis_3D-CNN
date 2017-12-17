@@ -1,0 +1,21 @@
+<app-pointcloud-uploader 
+    style="display: inline-flex;"
+    (uploaded)="onUploaded($event)"></app-pointcloud-uploader>
+{{filename | json}}
+<div *ngIf="data && data.length > 0">
+    <mat-form-field>
+        <input matInput 
+            placeholder="Voxel Size"
+            [(ngModel)]="voxelSize">
+    </mat-form-field>
+    <button (click)="generate()" mat-raised-button color="primary">Voxelize</button>
+
+    <mat-tab-group>
+        <mat-tab label="Convolution">
+            <app-convolution-panel (settings)="onConv($event)"></app-convolution-panel>
+        </mat-tab>
+        <mat-tab label="Pooling">
+            <app-pooling-panel></app-pooling-panel>
+        </mat-tab>
+    </mat-tab-group>
+</div>

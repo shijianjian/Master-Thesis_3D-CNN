@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 import { HomeModule } from './home/home.module';
 import { PredictionPageModule } from './prediction/prediction-page.module';
 import { TrainingPageModule } from './training/training-page.module';
+import { LaboratoryModule } from './lab/laboratory.module';
+import { GlobalDatGuiService } from './global-dat-guil.service';
+import { MainService } from './main.service';
 
 @NgModule({
   declarations: [
@@ -16,9 +19,12 @@ import { TrainingPageModule } from './training/training-page.module';
     routing,
     HomeModule,
     PredictionPageModule,
-    TrainingPageModule
+    TrainingPageModule,
+    LaboratoryModule
   ],
   providers: [
+    GlobalDatGuiService,
+    MainService
   ],
   bootstrap: [AppComponent]
 })

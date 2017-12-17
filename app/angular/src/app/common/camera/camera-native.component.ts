@@ -1,10 +1,10 @@
 import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
 import { MeshBasicMaterial, PointsMaterial, Points, Mesh, Vector3 } from 'three';
 
-import { DatGuiService } from '../dat-gui.service';
-import { GuiControllerTypes, GuiParameters } from '../model/GUI';
+import { DatGuiService } from './dat-gui.service';
+import { GuiControllerTypes, GuiParameters } from './model/GUI';
 import { PointCloudLoader, VoxelGridLoader } from './util/pointcloud-loader';
-import { CameraParams, CanvasSettings } from '../model/visual-settings';
+import { CameraParams, CanvasSettings } from './model/visual-settings';
 
 declare const THREE;
 declare const PLYLoader;

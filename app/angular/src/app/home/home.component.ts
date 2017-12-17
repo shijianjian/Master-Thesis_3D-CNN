@@ -13,7 +13,7 @@ import { Router } from "@angular/router";
     .welcome-section {
         display: flex;
         justify-content: center;
-        height: 50vw;
+        height: 20vw;
         border: 3px dashed blue;
     }
     .welcome-section:hover {
@@ -37,6 +37,10 @@ export class HomeComponent {
 
     onTraining() {
         this._router.navigateByUrl('/training');
+    }
+
+    onLaboratory() {
+        this._router.navigateByUrl('/lab');
     }
 
 }

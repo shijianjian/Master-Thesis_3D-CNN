@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule } from "@angular/common/http";
 
 import { TrainingPageComponent } from "./training-page.component";
-import { NavModule } from "./nav/nav.module";
+import { NavModule } from "../common/nav/nav.module";
 import { FolderExplorerModule } from "./folderExplorer/folder-explorer.module";
 import { TraningService } from "./traning.service";
 import { TrainingPanelModule } from "./trainingPanel/training-panel.module";

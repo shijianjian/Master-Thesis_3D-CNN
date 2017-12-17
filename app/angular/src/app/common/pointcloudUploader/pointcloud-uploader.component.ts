@@ -2,21 +2,20 @@ import { Component, Output, EventEmitter } from "@angular/core";
 import { FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { MatSelectChange } from "@angular/material";
 
-import { PredictionService } from "../prediction.service";
 import { baseUrl } from '../../settings';
-import { MainViewService } from "../main-view.service";
+import { MainService } from "../../main.service";
 import { PointCloudFile } from "./model/FileModel";
 
 @Component({
-    selector: 'app-file-uploader',
-    templateUrl: './file-uploader.component.html',
+    selector: 'app-pointcloud-uploader',
+    templateUrl: './pointcloud-uploader.component.html',
     styles: [`
       :host {
         display: block;
       }
     `]
 })
-export class FileUploaderComponent {
+export class PointCloudUploaderComponent {
 
     uploader: FileUploader;
     uploadState: boolean;
@@ -25,8 +24,7 @@ export class FileUploaderComponent {
     @Output() uploaded = new EventEmitter<PointCloudFile>();
     
     constructor(
-        private $predictionService: PredictionService,
-        private _mainViewService: MainViewService
+        private $mainService: MainService
     ){
         this.uploader = new FileUploader({
             url: `${baseUrl}/upload`,
@@ -52,13 +50,12 @@ export class FileUploaderComponent {
 
         this.uploader.response.subscribe(res => {
             this.uploadState = true;
-            this.$predictionService.getPoints(this.filename).subscribe(
+            this.$mainService.getPoints(this.filename).subscribe(
                 data => {
                     this.uploaded.emit({
                         filename: this.filename,
                         points: data.json()
                     });
-                    this._mainViewService.pointcloud.next(data.json());
                 }
             )
         });

@@ -2,7 +2,6 @@ import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 
 import { PredictionService } from "../prediction.service";
 import { Cluster } from "../controlItem/model/ClusterModel";
-import { MainViewService } from "../main-view.service";
 
 @Component({
     selector: 'app-control-panel',
@@ -29,10 +28,9 @@ export class ControlPanelComponent implements OnInit {
     points: number[][];
 
     constructor(
-        private $predictionService: PredictionService,
-        private _mainViewService: MainViewService
+        private $predictionService: PredictionService
     ) {
-        this._mainViewService.pointcloud.subscribe(data => {
+        this.$predictionService.pointcloud.subscribe(data => {
             this.points = data;
         })
     }

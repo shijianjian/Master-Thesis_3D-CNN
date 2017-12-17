@@ -13,6 +13,7 @@ from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, fi
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.prediction import predict
 from cnn.training.data_process import get_folder_structure
+from cnn.training.nn import conv_3d
 
 APP = Flask(__name__)
 CORS(APP)
@@ -229,12 +230,32 @@ def upload_file():
     return index()
 
 
-def allowed_file(filename):
-    """
-    Filter files according to file extensions.
-    """
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+@APP.route('/lab/conv', methods=['POST'])
+@cross_origin()
+def conv():
+    if request.method == 'POST':
+        import ast
+        voxel = None
+        kernel = None
+        stride = None
+        padding = None
+        try:
+            # convert string to proper format
+            voxel = request.form['voxel']
+            kernel = request.form['kernel']
+            stride = int(request.form['stride'])
+            padding = request.form['padding']
+            voxel = ast.literal_eval(voxel)
+            kernel = ast.literal_eval(kernel)
+        except Exception as e:
+            print('Error on recieving data')
+            print(e)
+        res = conv_3d(np.asarray(voxel), np.asarray(kernel), (stride, stride, stride), padding.upper())
+        return APP.response_class(
+            response=json.dumps(res.tolist()),
+            status=200,
+            mimetype='application/json'
+        )
 
 
 @APP.route('/folder_structure', methods=['GET'])
@@ -246,6 +267,13 @@ def folder_structure():
             status=200,
             mimetype='application/json'
         )
+
+def allowed_file(filename):
+    """
+    Filter files according to file extensions.
+    """
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 if __name__ == "__main__":

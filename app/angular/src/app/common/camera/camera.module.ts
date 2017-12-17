@@ -7,6 +7,7 @@ import { CameraNativeComponent } from './camera-native.component';
 import { CameraDialogComponent } from './camera-dialog.componnet';
 import { CameraDialogViewerComponent } from './camera-dialog-viewer.component';
 import { CameraPanelComponent } from './camera-panel.component';
+import { DatGuiService } from './dat-gui.service';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { CameraPanelComponent } from './camera-panel.component';
     CameraDialogComponent
   ],
   providers: [
+    DatGuiService
   ]
 })
 export class CameraModule { }

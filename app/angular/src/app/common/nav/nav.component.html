@@ -1,6 +1,8 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
+        <ng-content select=".nav-corner-icon"></ng-content>
         <span>Point Cloud Processing</span>
+        <ng-content select=".nav-content"></ng-content>
         <span style="flex: 1 1 auto;"></span>
         <mat-icon (click)="onClick()">exit_to_app</mat-icon>
     </mat-toolbar-row>

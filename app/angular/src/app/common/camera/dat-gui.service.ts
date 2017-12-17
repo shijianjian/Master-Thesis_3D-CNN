@@ -1,13 +1,14 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { GUI, GUIController } from 'dat-gui'
 
 import * as dat from 'dat.gui/build/dat.gui.js'
 import { GuiControllers, GuiParameters, GuiControllerTypes } from "./model/GUI";
 import { Subject, BehaviorSubject } from "rxjs";
 import { PointsMaterial, MeshBasicMaterial, Material } from "three";
+import { GlobalDatGuiService } from "../../global-dat-guil.service";
 
 @Injectable()
-export class DatGuiService {
+export class DatGuiService implements OnDestroy {
 
     private parameters: GuiParameters = {
         size: 0.01,
@@ -16,22 +17,19 @@ export class DatGuiService {
     };
     private _controllers: Subject<GuiParameters> = new BehaviorSubject<GuiParameters>(this.parameters);
 
-    // globle shared gui settings
-    private gui: GUI = new dat.GUI({
-        autoPlace: false
-    });
-    
-    private figureSize = this.gui
-            .add(this.parameters, 'size')
-            .min(0.001).max(1).step(0.001).name("Point Size").listen();
-    private figureMaterial = this.gui
-            .add(this.parameters, 'wireframe')
-            .name('Wireframe').listen();
-    private figureOpacity = this.gui
-            .add(this.parameters, 'opacity')
-            .min(0.1).max(1).step(0.1).name('Opacity').listen();
+    // globle shared gui instance
+    private gui: GUI;
 
-    constructor() {
+    // case by case settings
+    private figureSize;
+    private figureMaterial;
+    private figureOpacity;
+
+    constructor(private _globalGuiService: GlobalDatGuiService) {
+        
+        this.gui = this._globalGuiService.globalGui;
+        this.initGui();
+
         this.figureSize.onChange((value) => {
             this.parameters.size = value;
             this._controllers.next(this.parameters);
@@ -49,9 +47,27 @@ export class DatGuiService {
             this.gui.domElement.style.position = "absolute";
             this.gui.domElement.style.top = "0";
             this.gui.domElement.style.right = "0";
-            document.getElementById("main-camera").style.position = "relative";
-            document.getElementById("main-camera").appendChild(this.gui.domElement);
+            if (document.getElementById("main-camera") != null) {
+                document.getElementById("main-camera").style.position = "relative";
+                document.getElementById("main-camera").appendChild(this.gui.domElement);
+            }
         })
+    }
+
+    private initGui() {
+        this.figureSize = this.gui
+            .add(this.parameters, 'size')
+            .min(0.001).max(1).step(0.001).name("Point Size").listen();
+        this.figureMaterial = this.gui
+                .add(this.parameters, 'wireframe')
+                .name('Wireframe').listen();
+        this.figureOpacity = this.gui
+                .add(this.parameters, 'opacity')
+                .min(0.1).max(1).step(0.1).name('Opacity').listen();
+    }
+
+    ngOnDestroy() {
+        this._globalGuiService.reset();
     }
 
     get getControllers(): GuiControllers {

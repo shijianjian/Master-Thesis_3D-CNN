@@ -2,7 +2,7 @@ import * as nj from 'numjs';
 
 declare const THREE;
 
-import { CameraParams } from '../../model/visual-settings'
+import { CameraParams } from '../model/visual-settings'
 
 class ThreeDLoader {
 
@@ -150,9 +150,9 @@ export class VoxelGridLoader extends ThreeDLoader {
         return figure;
     }
 
-    static voxelize(pointcloud: number[][]) {
+    static voxelize(pointcloud: number[][], gridsize?: PointCloudCalculations.GridSize) {
         pointcloud = PointCloudCalculations.normalization(pointcloud);
-        return PointCloudCalculations.voxelize(pointcloud);
+        return PointCloudCalculations.voxelize(pointcloud, gridsize);
     }
 
     static getVoxelMeshes(voxelgrid: number[][][], meshBasicMaterialParams?: THREE.MeshBasicMaterialParameters): THREE.Mesh[] {
@@ -208,7 +208,7 @@ export namespace PointCloudCalculations {
         Z_MIN: number;
     }
 
-    interface GridSize {
+    export interface GridSize {
         X: number;
         Y: number;
         Z: number;

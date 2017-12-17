@@ -1,0 +1,15 @@
+<app-nav>
+    <mat-icon 
+        class="nav-corner-icon"
+        (click)="onMenu()" 
+        [style.visibility]="showMenu ? 'visible' : 'hidden'">menu</mat-icon>
+    <div class="nav-content" style="margin-left:30px;">
+        <app-pointcloud-uploader 
+            style="display: inline-flex;"
+            (uploaded)="onUploaded($event)"></app-pointcloud-uploader>
+        <button 
+            *ngIf="points"
+            (click)="onReload()"
+            class="btn btn-outline-primary">Reload</button>
+    </div>
+</app-nav>
