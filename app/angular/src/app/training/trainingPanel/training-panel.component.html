@@ -1,44 +1,35 @@
 <mat-card>
-    <div class="row">
-        <section class="col-sm-8">
-            <div>
-                <mat-checkbox 
-                    style="display:inline-block;"
-                    class="col-sm-6"
-                    (change)="onUseAll($event)"
-                    [checked]="use_all">Use all data</mat-checkbox>
-                <mat-form-field [hidden]="use_all">
-                    <input matInput type="number" 
-                        class="col-sm-5"
-                        [(ngModel)]="data_size"
-                        (keyup.enter)="onEnter()"
-                        step= "1"
-                        placeholder="Enter Data Amount">
-                </mat-form-field>
-            </div>
-            <div>
-                <mat-checkbox 
-                    style="display:inline-block;"
-                    class="col-sm-6" 
-                    (change)="onEnter()"
-                    [(ngModel)]="use_aug">Data Augmentation</mat-checkbox>
-                <app-data-aug 
-                    *ngIf="use_aug" 
-                    (augSettings)="onAugSettings($event)"
-                    style="display: inline-grid;"></app-data-aug>   
-            </div>
-        </section>
-        <section class="col-sm-4">
-            <mat-form-field>
-                <mat-select placeholder="Strategy">
-                    <mat-option *ngFor="let strategy of strategies" [value]="strategy">
-                    {{ strategy }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+    <mat-horizontal-stepper linear="true">
+        <mat-step [stepControl]="hdf5Form">
+            <form [formGroup]="hdf5Form">
+                <ng-template matStepLabel>Select HDF5 File</ng-template>
+                <app-build-file 
+                    [max]="max"
+                    (settings)="onSettings($event)"></app-build-file>
+                <div>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="trainingSettingForm">
+            <form [formGroup]="trainingSettingForm">
+                <ng-template matStepLabel>Training Settings</ng-template>
+                <app-training-settings
+                    #trainingSettingsEle
+                    [devices]="devices"
+                    ></app-training-settings>
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Training</ng-template>
             <button 
                 mat-raised-button 
-                color="primary">Start Training</button>
-        </section>
-    </div>
+                color="primary"
+                (click)="onStart()">Start Training</button>
+        </mat-step>
+    </mat-horizontal-stepper>
 </mat-card>

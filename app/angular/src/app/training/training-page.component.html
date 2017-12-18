@@ -11,13 +11,15 @@
         <app-folder-plot
             [structure]="structure"
             [selection]="selection"
-            [selectedSize]="selectedSize"
-            [useDataAug]="useDataAug"
+            [dataSettings]="dataSettings"
+            [max]="max"
+            (augSettings)="onAugSettings($event)"
             ></app-folder-plot>
         <app-training-panel
             style="margin-top: 10px;"
             [structure]="structure"
             [selection]="selection"
+            [augSettings]="augSettings"
             [max]="max"
             (settings)="onSettings($event)"></app-training-panel>
     </div>

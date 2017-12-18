@@ -1,0 +1,58 @@
+<section class="col-sm-8">
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                placeholder="Learning Rate" 
+                [(ngModel)]="learning_rate">
+        </mat-form-field> 
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                placeholder="Keep Rate" 
+                [(ngModel)]="keep_rate">
+        </mat-form-field> 
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                placeholder="Seed" 
+                [(ngModel)]="seed">
+        </mat-form-field> 
+    </div>
+    <div style="display: flex;">
+        <mat-slider
+            style="flex-grow: 1;"
+            max="100"
+            min="0"
+            step="1"
+            thumb-label="true"
+            [(ngModel)]="trainset"></mat-slider> 
+            <div><small>Training:</small>{{ trainset }}%</div>
+            <div><small>Testing:</small>{{ 100-trainset }}%</div>
+    </div>
+</section>
+
+<section class="col-sm-4">
+    <div *ngIf="devices && devices.length>0">
+        <mat-form-field>
+            <mat-select placeholder="Select Device" [(value)]="device">
+                <mat-option 
+                    *ngFor="let dev of devices" 
+                    [value]="dev">
+                {{ dev }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <mat-form-field>
+        <mat-select placeholder="Strategy" [(value)]="strategy">
+            <mat-option *ngFor="let strategy of strategies" [value]="strategy">
+            {{ strategy }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</section>

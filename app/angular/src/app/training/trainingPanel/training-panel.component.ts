@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges, EventEmitter, Output } from "@angular/core";
-import { MatCheckboxChange } from "@angular/material";
+import { Component, Input, OnChanges, EventEmitter, Output, ViewChild, ElementRef } from "@angular/core";
+import { FormGroup } from "@angular/forms";
 
 import { FolderInfo } from "../model/FolderStructure";
-import { TrainingSettings, DataAugmentation } from "../model/DataPreprocess";
+import { DataPrepSettings } from "../model/DataPreprocess";
+import { TrainingSettingsComponent } from "./training-settings.component";
 
 @Component({
     selector: 'app-training-panel',
@@ -18,52 +19,30 @@ export class TrainingPanelComponent implements OnChanges {
     @Input() selection;
     @Input() structure: FolderInfo[];
     @Input() max: number;
-    @Input() min: number;
+    @Input() augSettings: object;
 
-    @Output() settings = new EventEmitter<TrainingSettings>();
+    @Output() settings = new EventEmitter<DataPrepSettings>();
+    dataSettings: DataPrepSettings;
+    @ViewChild('trainingSettingsEle') element: TrainingSettingsComponent;
 
-    strategies = ['Training', 'Transfer Learning'];
-
-    use_all = true;
-    use_aug = false;
-
-    augSettings: DataAugmentation.Settings;
-    data_size = 0;
+    hdf5Form: FormGroup = new FormGroup({});
+    trainingSettingForm: FormGroup = new FormGroup({});
+    devices = ['/cpu:0'];
 
     ngOnChanges() {
 
     }
 
-    onUseAll(e: MatCheckboxChange) {
-        this.use_all = e.checked;
-        if (e.checked) {
-            this.data_size = this.max;
-        }
+    onSettings(e: DataPrepSettings) {
+        this.dataSettings = e;
+        this.settings.emit(e);
+    }
+    
+    onStart() {
+        console.log(this.element.onSettings())
+        console.log(this.dataSettings);
+        console.log(this.augSettings);
     }
 
-    onAugSettings(e: DataAugmentation.Settings) {
-        this.augSettings = e;
-        this.onEnter();
-    }
-
-    onEnter() {
-        this.settings.emit({
-            size: this.use_all ? this.max : this.data_size,
-            augment: this._augment
-        })
-    }
-
-    private get _augment() {
-        if(this.use_aug) {
-            if(this.augSettings 
-                && (this.augSettings.noise.enabled == true
-                || this.augSettings.rotate.enabled == true
-                || this.augSettings.squeeze.enabled == true)
-            ) {
-                return this.augSettings;
-            }
-        }
-        return undefined;
-    }
 
 }

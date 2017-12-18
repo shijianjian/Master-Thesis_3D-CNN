@@ -8,12 +8,14 @@ from pyntcloud import PyntCloud
 from flask import Flask, json, render_template, send_from_directory, request, redirect
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
+from tensorflow.python.client.device_lib import list_local_devices
 
 from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.prediction import predict
 from cnn.training.data_process import get_folder_structure
 from cnn.training.nn import conv_3d
+from cnn.training.cnn import set_placeholders, get_measurement, train_neural_network
 
 APP = Flask(__name__)
 CORS(APP)
@@ -253,6 +255,78 @@ def conv():
         res = conv_3d(np.asarray(voxel), np.asarray(kernel), (stride, stride, stride), padding.upper())
         return APP.response_class(
             response=json.dumps(res.tolist()),
+            status=200,
+            mimetype='application/json'
+        )
+
+
+@APP.route('/train/cnn', methods=['GET'])
+@cross_origin()
+def train_cnn():
+    if request.method == 'POST':
+        learning_rate = None
+        keep_rate = None
+        device = None
+        seed = None
+        try:
+            # convert string to proper format
+            learning_rate = float(request.form['learning_rate'])
+            keep_rate = float(request.form['keep_rate'])
+            device = request.form['device']
+            seed = int(request.form['seed'])
+        except Exception as e:
+            print('Error on recieving data')
+            print(e)
+    import tensorflow as tf
+        
+    x_shape=[None, 32, 32, 32, 1]
+    y_shape=[None, 5]
+    
+    record_performance = False
+
+    config = None
+    if device.upper().startswith("GPU"):
+        # GPU using BFC
+        config = tf.ConfigProto()
+        config.gpu_options.allocator_type = 'BFC'
+        
+    tf.reset_default_graph()
+    with tf.Session(config=config) as sess:
+        
+        placeholders = set_placeholders(x_shape, y_shape)
+        
+        measurments = get_measurement(placeholders, keep_rate=keep_rate, seed=seed, training=True, learning_rate=learning_rate, device=device)
+        
+        summary = None
+        if record_performance:
+            tf.summary.scalar("cross_entropy", measurments['cost'])
+            tf.summary.scalar("accuracy", measurments['accuracy'])
+            summary_all = tf.summary.merge_all()
+            logs_path = os.path.join(os.getcwd(), 'summaries')
+            train_writer = tf.summary.FileWriter(os.path.join(logs_path, 'train'), graph=tf.get_default_graph())
+            test_writer = tf.summary.FileWriter(os.path.join(logs_path, 'test'), graph=tf.get_default_graph())
+            summary = {'summary': summary_all, 'train_writer': train_writer, 'test_writer': test_writer}
+        
+        sess.run(tf.global_variables_initializer())
+        
+        train_neural_network(_x_train, _y_train, _x_test, _y_test, placeholders, measurments, summary_op=summary, epochs=2, batch_size=32, device=device)
+        
+        summary['train_writer'].close()
+        summary['test_writer'].close()
+        
+
+@APP.route('/train/devices', methods=['GET'])
+@cross_origin()
+def get_available_devices():
+    """
+    Get all devices.
+    """
+    local_device_protos = list_local_devices()
+    res = []
+    for _, _x in enumerate(local_device_protos):
+        res.append(_x.name[8:])
+    return APP.response_class(
+            response=json.dumps(res),
             status=200,
             mimetype='application/json'
         )
