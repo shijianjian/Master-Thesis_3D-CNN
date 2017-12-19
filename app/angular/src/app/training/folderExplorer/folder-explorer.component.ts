@@ -2,7 +2,7 @@ import { Component, OnChanges, EventEmitter, Output, Input, HostBinding } from "
 import { FormGroup, FormControl } from "@angular/forms";
 
 import { TraningService } from "../traning.service";
-import { FolderInfo } from "../model/FolderStructure";
+import { FolderInfo, FolderSelection } from "../model/FolderStructure";
 
 @Component({
     selector: 'app-folder-explorer',
@@ -15,7 +15,7 @@ import { FolderInfo } from "../model/FolderStructure";
 })
 export class FolderExplorerComponent implements OnChanges {
 
-    @Output() selection = new EventEmitter();
+    @Output() selection = new EventEmitter<FolderSelection>();
     @Input() structure: FolderInfo[];
     @HostBinding('class.row') binding = true;
     form: FormGroup;
@@ -30,12 +30,20 @@ export class FolderExplorerComponent implements OnChanges {
     }
 
     onChange() {
-        this.selection.emit(this.form.value);
+        this.selection.emit({
+            max_value: this.maxNumber,
+            min_value: this.minNumber,
+            result: this.form.value
+        });
     }
 
     onFilter(e) {
         this.filter(this.structure, e.min, e.max);
-        this.onChange();
+        this.selection.emit({
+            max_value: e.max,
+            min_value: e.min,
+            result: this.form.value
+        });
     }
 
     private filter(fields: FolderInfo[], min?: number, max?: number) {

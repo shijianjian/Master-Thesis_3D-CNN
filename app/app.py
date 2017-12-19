@@ -276,18 +276,17 @@ def get_datasets():
         mimetype='application/json'
     )
 
-@APP.route('/datasets/build', methods=['POST'])
+
+@APP.route('/dataset/build', methods=['POST'])
 @cross_origin()
 def build_datasets():
-    
-    import ast
-    filename = None
+
+    import json
     aug_settings = None
     try:
         # convert string to proper format
-        filename = request.form['filename']
-        aug_settings = request.form['aug_settings']
-        aug_settings = ast.literal_eval(aug_settings)
+        _aug_settings = request.form['aug_settings']
+        aug_settings = json.loads(_aug_settings)
     except Exception as e:
         print('Error on recieving data')
         print(e)
@@ -295,10 +294,19 @@ def build_datasets():
     data_path = os.path.join(APP_STATIC_PATH, 'PartAnnotation')
 
     dim=[32,32,32]
-    filename = 'small_shuffled_sets.h5'
+    filename = aug_settings['filename']
+
+    aug_method = []
+    if aug_settings['augment']['noise']['enabled'] is True:
+        aug_method.append('noise')
+    if aug_settings['augment']['squeeze']['enabled'] is True:
+        aug_method.append('sqeeze')
+    if aug_settings['augment']['rotate']['enabled'] is True:
+        aug_method.append('rotate')
     
-    data, label = find_data(data_path=data_path, max_file_num=None, augment_to_num=None, folder_filter=(None, None), 
-                            aug_methods=('rotate', 'sqeeze', 'noise'))
+    data, label = find_data(data_path=data_path, max_file_num=int(aug_settings['size']), augment_to_num=aug_settings['augment']['min_value'], 
+                            folder_filter=(int(aug_settings['min_filter']), int(aug_settings['max_filter'])), 
+                            aug_methods=tuple(aug_method))
     
     _shuffled_data_raw, _shuffled_label_raw = data_shuffling(data, label)
     
@@ -306,7 +314,7 @@ def build_datasets():
     _shuffled_label, _label_ref = data_onehot_encode(_shuffled_label_raw)
 
     # Create hdf5
-    hdf5_path = os.path.join(data_path, filename)
+    hdf5_path = os.path.join(os.path.join(APP_STATIC_PATH, 'h5dataset'), filename + '.h5')
     hdf5_file = h5py.File(hdf5_path, mode='w')
 
     hdf5_file.create_dataset("voxels", data=_shuffled_data[:])
@@ -324,16 +332,18 @@ def build_datasets():
     )
 
 
-@APP.route('/train/cnn', methods=['GET'])
+@APP.route('/train/cnn', methods=['POST'])
 @cross_origin()
 def train_cnn():
+    print(request.method, request.form)
     if request.method == 'POST':
         tranining_settings = None
         dataset = None
         try:
-            import ast
+            import json
             # convert string to proper format
-            tranining_settings = ast.literal_eval(request.form['tranining_settings'])
+            dataset = request.form['dataset']
+            tranining_settings = json.loads(request.form['training_settings'])
             tranining_settings['device'] = "/" + tranining_settings['device'].lower()
             tranining_settings['trainset'] = int(tranining_settings['trainset'])
             tranining_settings['keep_rate'] = float(tranining_settings['keep_rate'])
@@ -341,7 +351,6 @@ def train_cnn():
             tranining_settings['learning_rate'] = float(tranining_settings['learning_rate'])
             tranining_settings['epochs'] = int(tranining_settings['epochs'])
             tranining_settings['batch_size'] = int(tranining_settings['batch_size'])
-            dataset = request.form['dataset']
         except Exception as e:
             print('Error on recieving data')
             print(e)
@@ -352,7 +361,7 @@ def train_cnn():
     record_performance = False
 
     config = None
-    if tranining_settings.device.upper().startswith("GPU"):
+    if tranining_settings['device'].upper().startswith("GPU"):
         # GPU using BFC
         gpu_options = tf.GPUOptions(allocator_type = 'BFC')
         config = tf.ConfigProto(gpu_options=gpu_options)
@@ -375,8 +384,8 @@ def train_cnn():
     x_shape=[None, 32, 32, 32, 1]
     y_shape=[None, len(_y_train[0])]
 
-    with tf.Session(config=config) as sess:
-        
+    sess = tf.Session(config=config)
+    with sess.as_default(): 
         placeholders = set_placeholders(x_shape, y_shape)
         
         measurments = get_measurement(placeholders, keep_rate=tranining_settings['keep_rate'], seed=tranining_settings['seed'], training=True, 
@@ -393,16 +402,20 @@ def train_cnn():
             summary = {'summary': summary_all, 'train_writer': train_writer, 'test_writer': test_writer}
         
         sess.run(tf.global_variables_initializer())
-        
-        train_neural_network(_x_train, _y_train, _x_test, _y_test, placeholders, measurments, 
-                             summary_op=summary, epochs=tranining_settings['epochs'], 
-                             batch_size=tranining_settings['batch_size'], device=tranining_settings['device'])
-        
+
+        train_neural_network(_x_train, _y_train, _x_test, _y_test, placeholders, measurments, session=sess,
+                            summary_op=summary, epochs=tranining_settings['epochs'],
+                            batch_size=tranining_settings['batch_size'], device=tranining_settings['device'])
+         
         if record_performance:
             summary['train_writer'].close()
             summary['test_writer'].close()
 
-        return 
+        return APP.response_class(
+                response=json.dumps("success"),
+                status=200,
+                mimetype='application/json'
+            )
         
 
 @APP.route('/train/devices', methods=['GET'])

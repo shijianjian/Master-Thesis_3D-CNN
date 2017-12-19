@@ -23,9 +23,8 @@ export class TraningService {
         return this._http.get(baseUrl + '/train/devices');
     }
 
-    buildH5File(h5Settings: DataPrepSettings, augDict: object) {
+    buildH5File(h5Settings: DataPrepSettings) {
         let body = new FormData();
-        body.append('aug_target', JSON.stringify(augDict));
         body.append('aug_settings', JSON.stringify(h5Settings));
         return this._http.post(baseUrl + '/dataset/build', body);
     }
@@ -34,7 +33,7 @@ export class TraningService {
         let body = new FormData();
         body.append('dataset', dataset);
         body.append('training_settings', JSON.stringify(trainingSettings));
-        return this._http.post(baseUrl + '/build/training', body);
+        return this._http.post(baseUrl + '/train/cnn', body);
     }
 
 }

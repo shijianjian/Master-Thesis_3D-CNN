@@ -77,7 +77,7 @@ def get_measurement(placeholders, seed=None, keep_rate=0.5, learning_rate=0.01, 
     return {'prediction': prediction, 'cost': cost, 'optimizer': optimizer, 'accuracy': accuracy}
 
 
-def run_nn(data, label, placeholders, measurments, summary_op=None, batch_size=32, epoch_step=0, training=True, device='/cpu:0'):
+def run_nn(data, label, placeholders, measurments, session, summary_op=None, batch_size=32, epoch_step=0, training=True, device='/cpu:0'):
     
     x_input = placeholders['x_input']
     y_input = placeholders['y_input']
@@ -93,54 +93,54 @@ def run_nn(data, label, placeholders, measurments, summary_op=None, batch_size=3
     summary_counter = int(epoch_step*(len(data)/summary_step))
     
     acc = 0
-    
-    # mini batch
-    for itr in range(iterations):
-        mini_batch_x = data[itr*batch_size: (itr+1)*batch_size]
-        mini_batch_y = label[itr*batch_size: (itr+1)*batch_size]
-        
-        if training and summary_op is None:
-            _optimizer, _acc, _cost = sess.run([optimizer, accuracy, cost], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
-            print('\tLost for', itr + 1, "/", iterations, _cost, end='\r')
-            acc += _acc
+    with session.as_default():
+        # mini batch
+        for itr in range(iterations):
+            mini_batch_x = data[itr*batch_size: (itr+1)*batch_size]
+            mini_batch_y = label[itr*batch_size: (itr+1)*batch_size]
             
-        elif training and summary_op is not None:
-            _optimizer, _acc, _cost, _summary = sess.run([optimizer, accuracy, cost, summary_op['summary']], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
-            print('\tLost for', itr + 1, "/", iterations, _cost, end='\r')
-            summary_op['train_writer'].add_summary(_summary, summary_counter)
-            summary_op['train_writer'].flush()
-            acc += _acc
+            if training and summary_op is None:
+                _optimizer, _acc, _cost = session.run([optimizer, accuracy, cost], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
+                print('\tLost for', itr + 1, "/", iterations, _cost, end='\r')
+                acc += _acc
+                
+            elif training and summary_op is not None:
+                _optimizer, _acc, _cost, _summary = session.run([optimizer, accuracy, cost, summary_op['summary']], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
+                print('\tLost for', itr + 1, "/", iterations, _cost, end='\r')
+                summary_op['train_writer'].add_summary(_summary, summary_counter)
+                summary_op['train_writer'].flush()
+                acc += _acc
+                
+            elif not training and summary_op is not None:
+                _acc, _summary = session.run([accuracy, summary_op['summary']], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
+                print('\tAccuacy for', itr + 1, "/", iterations, _acc, end='\r')
+                acc += _acc
+                summary_op['test_writer'].add_summary(_summary, summary_counter)
+                summary_op['test_writer'].flush()
+                
+            else:
+                _acc = session.run(accuracy, feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
+                print('\tAccuacy for', itr + 1, "/", iterations, _acc, end='\r')
+                acc += _acc
             
-        elif not training and summary_op is not None:
-            _acc, _summary = sess.run([accuracy, summary_op['summary']], feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
-            print('\tAccuacy for', itr + 1, "/", iterations, _acc, end='\r')
-            acc += _acc
-            summary_op['test_writer'].add_summary(_summary, summary_counter)
-            summary_op['test_writer'].flush()
-            
-        else:
-            _acc = sess.run(accuracy, feed_dict={x_input: mini_batch_x, y_input: mini_batch_y})
-            print('\tAccuacy for', itr + 1, "/", iterations, _acc, end='\r')
-            acc += _acc
-        
-        summary_counter += int(batch_size/summary_step)
+            summary_counter += int(batch_size/summary_step)
 
-    print("\n")
-    
-    if not training:
-        print("\tTesting Accuracy:", acc/iterations)
-    
-    return acc/iterations
+        print("\n")
+        
+        if not training:
+            print("\tTesting Accuracy:", acc/iterations)
+        
+        return acc/iterations
             
 
-def train_neural_network(x_train_data, y_train_data, x_test_data, y_test_data, 
-                         placeholders, measurments, summary_op=None, epochs=10, 
+def train_neural_network(x_train_data, y_train_data, x_test_data, y_test_data,
+                         placeholders, measurments, session, summary_op=None, epochs=10, 
                          batch_size=128, save_model=False, early_stop=None, model_name=None, 
                          device='/cpu:0'):
 
     import numbers
     import datetime
-    
+
     if early_stop is not None:
         assert(isinstance(early_stop, numbers.Number)), "please give a number for early_stop, exp: 0.1 means the iteration will be stopped when the differences of two iteration is lower than 0.1"
     
@@ -154,10 +154,12 @@ def train_neural_network(x_train_data, y_train_data, x_test_data, y_test_data,
         print('Epoch', epoch, 'started')
 
         # train
-        acc_train = run_nn(x_train_data, y_train_data, placeholders, measurments, summary_op=summary, batch_size=batch_size, epoch_step=epoch, training=True, device=device)
+        acc_train = run_nn(x_train_data, y_train_data, placeholders, measurments, summary_op=summary_op, session=session,
+                           batch_size=batch_size, epoch_step=epoch, training=True, device=device)
 
          # test
-        acc_test = run_nn(x_test_data, y_test_data, placeholders, measurments, summary_op=summary, batch_size=batch_size, epoch_step=epoch, training=False, device=device)
+        acc_test = run_nn(x_test_data, y_test_data, placeholders, measurments, summary_op=summary_op, session=session,
+                          batch_size=batch_size, epoch_step=epoch, training=False, device=device)
         
         end_time_epoch = datetime.datetime.now()
         print('\tTime elapse:', str(end_time_epoch - start_time_epoch)) 

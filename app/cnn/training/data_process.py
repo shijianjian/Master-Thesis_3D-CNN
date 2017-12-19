@@ -37,7 +37,7 @@ def get_folder_structure(data_path=None, file_ext=('.pts', '.ptx'), details=Fals
     return res
 
 
-def find_data(data_path=None, max_file_num=None, augment_to_num=None, folder_filter=(None, None), aug_methods=('rotate', 'sqeeze', 'noise')):
+def find_data(data_path=None, max_file_num=None, augment_to_num=None, folder_filter=(None, None), aug_methods=('rotate', 'squeeze', 'noise')):
     """
     Find file in each folder according to the 'data_path'.
     
@@ -66,16 +66,15 @@ def find_data(data_path=None, max_file_num=None, augment_to_num=None, folder_fil
             if (min_th is None or file_count >= min_th) and (max_th is None or file_count <= max_th):
                 count = 0
 
-                all_files = os.scandir(target_dir_path);
-                if augment_to_num is not None and len(all_files) < augment_to_num:
-                    files_need_augment = augment_to_num - len(all_files)
+                if augment_to_num is not None and file_count < augment_to_num:
+                    files_need_augment = augment_to_num - file_count
                     for _ in range(files_need_augment):
-                        idx = np.random.randint(len(all_files))
-                        data = PyntCloud(os.path.join(target_dir_path, all_files[idx])).xyz
-                        new_data = augment_data(data, aug_method)
+                        idx = np.random.randint(file_count)
+                        pc = PyntCloud.from_file(os.path.join(target_dir_path, files[idx]), sep=" ", header=0, names=["x","y","z"]).xyz
+                        new_pc = augment_data(pc, aug_methods)
                         import uuid
                         unique_filename = "_aug_" + str(_) + "_" + str(uuid.uuid4())
-                        write_to_file(new_data, unique_filename)
+                        write_to_file(os.path.join(data_path, entry.name, 'points', unique_filename), new_pc)
 
                 for pts_data in os.scandir(target_dir_path):
                     if (max_file_num is None) or (count < max_file_num):
@@ -146,9 +145,9 @@ def data_shuffling(data, label):
     return data, label
 
 
-def write_to_file(xyz, filename='xyz'):
+def write_to_file(file_path, xyz):
     import os
-    f = open(os.path.join(os.getcwd(), filename + ".pts"), "w") 
+    f = open(file_path + ".pts", "w") 
     
     for point in xyz:
         st = ""

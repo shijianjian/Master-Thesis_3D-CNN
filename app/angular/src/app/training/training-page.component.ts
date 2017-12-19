@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TraningService } from './traning.service';
 import { DataPrepSettings } from './model/DataPreprocess';
-import { FolderInfo } from './model/FolderStructure';
+import { FolderInfo, FolderSelection } from './model/FolderStructure';
 
 @Component({
 	selector: 'app-training-page',
@@ -12,9 +12,8 @@ import { FolderInfo } from './model/FolderStructure';
 export class TrainingPageComponent implements OnInit {
 
     structure: FolderInfo[] = [];
-    selection = {};
+    selection: FolderSelection;
     dataSettings: DataPrepSettings;
-    augSettings: object;
     max;
 
     devices: string[];
@@ -41,10 +40,6 @@ export class TrainingPageComponent implements OnInit {
         )
     }
 
-    onAugSettings(e: object) {
-        this.augSettings = e;
-    }
-
     private getMax(fields: FolderInfo[]): number {
         let max = 0;
         fields.forEach(field => {
@@ -59,7 +54,7 @@ export class TrainingPageComponent implements OnInit {
         this.dataSettings = e;
     }
 
-    onSelected(e) {
+    onSelected(e: FolderSelection) {
         this.selection = e;
     }
 }

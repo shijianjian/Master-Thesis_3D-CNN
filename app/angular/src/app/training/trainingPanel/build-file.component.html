@@ -16,6 +16,9 @@
                     placeholder="Enter Data Amount">
             </mat-form-field>
         </div>
+        <mat-form-field>
+            <input matInput placeholder="Filename" [(ngModel)]="filename">
+        </mat-form-field>
         <div>
             <mat-checkbox 
                 style="display:inline-block;"
@@ -32,7 +35,9 @@
     <mat-radio-button value="2">Using Existing HDF5 File</mat-radio-button>
     <section *ngIf="radio == 2">
         <mat-form-field>
-            <mat-select placeholder="Select Existing HDF5 Dataset">
+            <mat-select 
+                (selectionChange)="onSelected($event)" 
+                placeholder="Select Existing HDF5 Dataset">
                 <mat-option *ngFor="let file of datasets" [value]="file">
                 {{ file }}
                 </mat-option>

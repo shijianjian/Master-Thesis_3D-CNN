@@ -4,6 +4,7 @@
             <form [formGroup]="hdf5Form">
                 <ng-template matStepLabel>Select HDF5 File</ng-template>
                 <app-build-file 
+                    #buildfile
                     [max]="max"
                     [datasets]="datasets"
                     (settings)="onSettings($event)"></app-build-file>

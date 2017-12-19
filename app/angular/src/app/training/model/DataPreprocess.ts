@@ -24,7 +24,10 @@ export namespace DataAugmentation {
 
 export interface DataPrepSettings {
     size: number;
+    filename: string;
     augment: DataAugmentation.Settings;
+    min_filter?: number;
+    max_filter?: number;
 }
 
 export interface TrainingSettings {
