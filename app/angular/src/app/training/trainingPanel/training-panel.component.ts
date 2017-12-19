@@ -20,14 +20,14 @@ export class TrainingPanelComponent implements OnChanges {
     @Input() structure: FolderInfo[];
     @Input() max: number;
     @Input() augSettings: object;
-
+    @Input() datasets: string[];
+    @Input() devices: string[];
     @Output() settings = new EventEmitter<DataPrepSettings>();
     dataSettings: DataPrepSettings;
     @ViewChild('trainingSettingsEle') element: TrainingSettingsComponent;
 
     hdf5Form: FormGroup = new FormGroup({});
     trainingSettingForm: FormGroup = new FormGroup({});
-    devices = ['/cpu:0'];
 
     ngOnChanges() {
 

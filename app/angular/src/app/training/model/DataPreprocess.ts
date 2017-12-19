@@ -34,6 +34,8 @@ export interface TrainingSettings {
     trainset: number;
     device: string;
     strategy: LearningStrategy;
+    epochs: number;
+    batch_size: number;
 }
 
 export enum LearningStrategy {

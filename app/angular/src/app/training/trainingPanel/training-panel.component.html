@@ -5,6 +5,7 @@
                 <ng-template matStepLabel>Select HDF5 File</ng-template>
                 <app-build-file 
                     [max]="max"
+                    [datasets]="datasets"
                     (settings)="onSettings($event)"></app-build-file>
                 <div>
                     <button mat-button matStepperNext>Next</button>

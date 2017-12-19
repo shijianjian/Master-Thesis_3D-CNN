@@ -21,6 +21,8 @@ export class TrainingSettingsComponent implements OnChanges {
     learning_rate = 0.0005;
     keep_rate = 0.5;
     seed = 1000;
+    epochs = 5;
+    batch_size = 32;
 
     ngOnChanges() {
 
@@ -34,7 +36,9 @@ export class TrainingSettingsComponent implements OnChanges {
             seed: this.seed,
             trainset: this.trainset,
             strategy: st,
-            device: this.device
+            device: this.device,
+            epochs: this.epochs,
+            batch_size: this.batch_size
         }
         return settings;
     }

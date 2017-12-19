@@ -3,6 +3,8 @@
         <mat-form-field>
             <input matInput 
                 type="number" 
+                min="0"
+                max="1"
                 placeholder="Learning Rate" 
                 [(ngModel)]="learning_rate">
         </mat-form-field> 
@@ -11,6 +13,8 @@
         <mat-form-field>
             <input matInput 
                 type="number" 
+                min="0"
+                max="1"
                 placeholder="Keep Rate" 
                 [(ngModel)]="keep_rate">
         </mat-form-field> 
@@ -19,8 +23,27 @@
         <mat-form-field>
             <input matInput 
                 type="number" 
+                min="0"
                 placeholder="Seed" 
                 [(ngModel)]="seed">
+        </mat-form-field> 
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                min="0"
+                placeholder="Epochs" 
+                [(ngModel)]="epochs">
+        </mat-form-field> 
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput 
+                type="number" 
+                min="0"
+                placeholder="Batch Size" 
+                [(ngModel)]="batch_size">
         </mat-form-field> 
     </div>
     <div style="display: flex;">

@@ -32,8 +32,8 @@
     <mat-radio-button value="2">Using Existing HDF5 File</mat-radio-button>
     <section *ngIf="radio == 2">
         <mat-form-field>
-            <mat-select placeholder="Select Existing HDF5 File">
-                <mat-option *ngFor="let file of files" [value]="file">
+            <mat-select placeholder="Select Existing HDF5 Dataset">
+                <mat-option *ngFor="let file of datasets" [value]="file">
                 {{ file }}
                 </mat-option>
             </mat-select>

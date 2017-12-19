@@ -16,7 +16,7 @@ import { DataPrepSettings, DataAugmentation } from "../model/DataPreprocess";
 export class BuildFileComponent implements OnChanges {
     @Input() max: number;
     @Input() min: number;
-    @Input() files = ['No Existing File'];
+    @Input() datasets = ['No Existing File'];
 
     @Output() settings = new EventEmitter<DataPrepSettings>();
 

@@ -5,6 +5,7 @@ MicroService for 3D point cloud CNN
 import os
 import numpy as np
 from pyntcloud import PyntCloud
+import h5py
 from flask import Flask, json, render_template, send_from_directory, request, redirect
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
@@ -13,9 +14,10 @@ from tensorflow.python.client.device_lib import list_local_devices
 from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, find_cluster_points
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.prediction import predict
-from cnn.training.data_process import get_folder_structure
+from cnn.training.data_process import get_folder_structure, data_reshape, data_shuffling, data_onehot_encode, find_data
 from cnn.training.nn import conv_3d
 from cnn.training.cnn import set_placeholders, get_measurement, train_neural_network
+
 
 APP = Flask(__name__)
 CORS(APP)
@@ -260,42 +262,125 @@ def conv():
         )
 
 
+@APP.route('/datasets', methods=['GET'])
+@cross_origin()
+def get_datasets():
+    data_path = os.path.join(APP_STATIC_PATH, 'h5dataset')
+    res = []
+    for file in os.listdir(data_path):
+        if file.endswith(".h5"):
+            res.append(file[:-3])
+    return APP.response_class(
+        response=json.dumps(res),
+        status=200,
+        mimetype='application/json'
+    )
+
+@APP.route('/datasets/build', methods=['POST'])
+@cross_origin()
+def build_datasets():
+    
+    import ast
+    filename = None
+    aug_settings = None
+    try:
+        # convert string to proper format
+        filename = request.form['filename']
+        aug_settings = request.form['aug_settings']
+        aug_settings = ast.literal_eval(aug_settings)
+    except Exception as e:
+        print('Error on recieving data')
+        print(e)
+
+    data_path = os.path.join(APP_STATIC_PATH, 'PartAnnotation')
+
+    dim=[32,32,32]
+    filename = 'small_shuffled_sets.h5'
+    
+    data, label = find_data(data_path=data_path, max_file_num=None, augment_to_num=None, folder_filter=(None, None), 
+                            aug_methods=('rotate', 'sqeeze', 'noise'))
+    
+    _shuffled_data_raw, _shuffled_label_raw = data_shuffling(data, label)
+    
+    _shuffled_data = data_reshape(_shuffled_data_raw, dim)
+    _shuffled_label, _label_ref = data_onehot_encode(_shuffled_label_raw)
+
+    # Create hdf5
+    hdf5_path = os.path.join(data_path, filename)
+    hdf5_file = h5py.File(hdf5_path, mode='w')
+
+    hdf5_file.create_dataset("voxels", data=_shuffled_data[:])
+    hdf5_file.create_dataset("labels", data=_shuffled_label[:])
+    hdf5_file.create_dataset('label_ref', data=np.array(_label_ref).astype('|S9')) # ASCII
+  
+    res = {
+        'status': 'Success',
+        'filename': filename
+    }
+    return APP.response_class(
+        response=json.dumps(res),
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @APP.route('/train/cnn', methods=['GET'])
 @cross_origin()
 def train_cnn():
     if request.method == 'POST':
-        learning_rate = None
-        keep_rate = None
-        device = None
-        seed = None
+        tranining_settings = None
+        dataset = None
         try:
+            import ast
             # convert string to proper format
-            learning_rate = float(request.form['learning_rate'])
-            keep_rate = float(request.form['keep_rate'])
-            device = request.form['device']
-            seed = int(request.form['seed'])
+            tranining_settings = ast.literal_eval(request.form['tranining_settings'])
+            tranining_settings['device'] = "/" + tranining_settings['device'].lower()
+            tranining_settings['trainset'] = int(tranining_settings['trainset'])
+            tranining_settings['keep_rate'] = float(tranining_settings['keep_rate'])
+            tranining_settings['seed'] = int(tranining_settings['seed'])
+            tranining_settings['learning_rate'] = float(tranining_settings['learning_rate'])
+            tranining_settings['epochs'] = int(tranining_settings['epochs'])
+            tranining_settings['batch_size'] = int(tranining_settings['batch_size'])
+            dataset = request.form['dataset']
         except Exception as e:
             print('Error on recieving data')
             print(e)
+
     import tensorflow as tf
-        
-    x_shape=[None, 32, 32, 32, 1]
-    y_shape=[None, 5]
+    import h5py
     
     record_performance = False
 
     config = None
-    if device.upper().startswith("GPU"):
+    if tranining_settings.device.upper().startswith("GPU"):
         # GPU using BFC
-        config = tf.ConfigProto()
-        config.gpu_options.allocator_type = 'BFC'
+        gpu_options = tf.GPUOptions(allocator_type = 'BFC')
+        config = tf.ConfigProto(gpu_options=gpu_options)
         
     tf.reset_default_graph()
+
+    # load data
+    data_path = os.path.join(APP_STATIC_PATH, 'h5dataset', dataset + ".h5");
+    h5_data = h5py.File(data_path, mode='r')
+    data = h5_data.get("voxels")
+    label = h5_data.get("labels")
+    label_ref = h5_data.get("label_ref")
+    print(label_ref)
+    split_point = len(data) * tranining_settings['trainset']
+    _x_train = data[:split_point]
+    _y_train = label[:split_point]
+    _x_test = data[split_point:]
+    _y_test = label[split_point:]
+
+    x_shape=[None, 32, 32, 32, 1]
+    y_shape=[None, len(_y_train[0])]
+
     with tf.Session(config=config) as sess:
         
         placeholders = set_placeholders(x_shape, y_shape)
         
-        measurments = get_measurement(placeholders, keep_rate=keep_rate, seed=seed, training=True, learning_rate=learning_rate, device=device)
+        measurments = get_measurement(placeholders, keep_rate=tranining_settings['keep_rate'], seed=tranining_settings['seed'], training=True, 
+                                      learning_rate=tranining_settings['learning_rate'], device=tranining_settings['device'])
         
         summary = None
         if record_performance:
@@ -309,10 +394,15 @@ def train_cnn():
         
         sess.run(tf.global_variables_initializer())
         
-        train_neural_network(_x_train, _y_train, _x_test, _y_test, placeholders, measurments, summary_op=summary, epochs=2, batch_size=32, device=device)
+        train_neural_network(_x_train, _y_train, _x_test, _y_test, placeholders, measurments, 
+                             summary_op=summary, epochs=tranining_settings['epochs'], 
+                             batch_size=tranining_settings['batch_size'], device=tranining_settings['device'])
         
-        summary['train_writer'].close()
-        summary['test_writer'].close()
+        if record_performance:
+            summary['train_writer'].close()
+            summary['test_writer'].close()
+
+        return 
         
 
 @APP.route('/train/devices', methods=['GET'])
@@ -341,6 +431,7 @@ def folder_structure():
             status=200,
             mimetype='application/json'
         )
+
 
 def allowed_file(filename):
     """

@@ -17,10 +17,15 @@ export class TrainingPageComponent implements OnInit {
     augSettings: object;
     max;
 
+    devices: string[];
+    datasets: string[];
+
     constructor(private $trainingService: TraningService) { }
 
     ngOnInit() {
         this.getStructure();
+        this.$trainingService.getDataSet().subscribe(data => this.datasets = data.json());
+        this.$trainingService.getDevices().subscribe(data => this.devices = data.json());
     }
 
     getStructure() {
