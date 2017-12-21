@@ -19,8 +19,10 @@ Within the .label file, simply given a list of class labels which are correspond
 #### Dependencies
 - [PyntCloud](http://pyntcloud.readthedocs.io/en/latest/installation.html)
 - [flask](http://flask.pocoo.org)
+- [h5py](http://www.h5py.org/)
 
 #### How to run
+
 Before running:
 ~~~
 $ cd angular

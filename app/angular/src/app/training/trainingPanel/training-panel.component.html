@@ -4,6 +4,7 @@
             <form [formGroup]="hdf5Form">
                 <ng-template matStepLabel>Select HDF5 File</ng-template>
                 <app-build-file 
+                    onkeypress="event.stopPropagation();"
                     #buildfile
                     [max]="max"
                     [datasets]="datasets"
@@ -17,6 +18,7 @@
             <form [formGroup]="trainingSettingForm">
                 <ng-template matStepLabel>Training Settings</ng-template>
                 <app-training-settings
+                    onkeypress="event.stopPropagation();"
                     #trainingSettingsEle
                     [devices]="devices"
                     ></app-training-settings>

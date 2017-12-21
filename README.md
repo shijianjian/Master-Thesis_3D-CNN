@@ -7,6 +7,7 @@ This project contains two parts which is concept and application respectively. W
 ## Web app for CNN model
 
 ### Requirements
+- node
 - python 3
 - Training data. Sample training data can be found [here](http://web.stanford.edu/~ericyi/project_page/part_annotation/index.html).
 
@@ -33,7 +34,7 @@ After Installation, you can try running [this script](https://gist.github.com/mr
 ##### For running the app:
 Before running:
 ~~~
-$ cd angular
+$ cd ./app/angular
 $ npm install
 ~~~
 
@@ -49,6 +50,6 @@ $ bash clean.bash
 
 ##### For running the concept:
 ~~~
-$ cd ../concept
+$ cd ./concept
 $ jupyter notebook
 ~~~
