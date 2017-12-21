@@ -29,6 +29,10 @@ $ cd angular
 $ npm install
 ~~~
 
+If the infinite loop encountered while installing node-gyp (May on windows). Run following script instead:
+~~~
+$ npm install --ignore-script --unsafe-perm
+~~~
 
 For running:
 ~~~
