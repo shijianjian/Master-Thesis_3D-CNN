@@ -25,6 +25,7 @@ class ThreeDLoader {
         camera.position.z = cameraParams.position_z;
         camera.up = new THREE.Vector3(0, 0, 1);
 
+        camera.rotation.order = "YXZ";
         camera.lookAt(new THREE.Vector3(
             cameraParams.look_x, 
             cameraParams.look_y, 
@@ -166,7 +167,7 @@ export class VoxelGridLoader extends ThreeDLoader {
                         continue;
                     }
                     let materialSettings: THREE.MeshBasicMaterialParameters = {
-                        wireframe: meshBasicMaterialParams && meshBasicMaterialParams.wireframe ? meshBasicMaterialParams.wireframe : true,
+                        wireframe: meshBasicMaterialParams && meshBasicMaterialParams.wireframe ? meshBasicMaterialParams.wireframe : false,
                         transparent: meshBasicMaterialParams && meshBasicMaterialParams.transparent ? meshBasicMaterialParams.transparent : true,
                         opacity: meshBasicMaterialParams && meshBasicMaterialParams.opacity ? meshBasicMaterialParams.opacity : 0.3,
                         // Orange desity

@@ -1,0 +1,36 @@
+<div>
+    <mat-form-field>
+        <input matInput 
+            type="number" 
+            placeholder="Kernel Size x" [(ngModel)]="poolSize.X">
+    </mat-form-field>
+</div>
+<div>
+<mat-form-field>
+    <input matInput 
+        type="number" 
+        placeholder="Kernel Size y" [(ngModel)]="poolSize.Y">
+</mat-form-field>
+</div>
+<div>
+    <mat-form-field>
+        <input matInput 
+            type="number"
+            placeholder="Kernel Size z" [(ngModel)]="poolSize.Z">
+    </mat-form-field>
+</div>
+
+<mat-form-field>
+    <input matInput type="number" placeholder="Stride" [(ngModel)]="stride">
+</mat-form-field>
+<div>
+    <mat-select placeholder="Padding" [value]="padding" (selectionChange)="onPadding($event)">
+        <mat-option *ngFor="let pad of paddingStrategy" [value]="pad">
+            {{ pad }}
+        </mat-option>
+    </mat-select>
+</div>
+<button 
+    style="margin-top: 10px; float:right" 
+    mat-raised-button 
+    (click)="onStart()" color="primary">Start</button>

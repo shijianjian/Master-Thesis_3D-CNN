@@ -6,6 +6,13 @@
 
 <div style="padding-top:3em;" *ngIf="outputgrid && outputgrid.length>0" class="col-sm-12">
     Result:
+    <div class="seg-display">
+        <mat-icon 
+            style="display:block; margin-left:auto;"
+            matTooltip="Launch To Main View" 
+            matTooltipPosition="below"
+            (click)="onLaunch(outputgrid)">launch</mat-icon>
+    </div>
     <app-camera-native
         [data]="outputgrid"
         ></app-camera-native>

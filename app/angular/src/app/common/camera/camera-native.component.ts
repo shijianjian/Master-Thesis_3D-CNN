@@ -1,7 +1,7 @@
 import { Component, OnInit, OnChanges, Input, ViewChild, ElementRef } from '@angular/core';
 import { MeshBasicMaterial, PointsMaterial, Points, Mesh, Vector3 } from 'three';
 
-import { DatGuiService } from './dat-gui.service';
+import { CameraService } from './camera.service';
 import { GuiControllerTypes, GuiParameters } from './model/GUI';
 import { PointCloudLoader, VoxelGridLoader } from './util/pointcloud-loader';
 import { CameraParams, CanvasSettings } from './model/visual-settings';
@@ -37,8 +37,8 @@ export class CameraNativeComponent implements OnChanges {
     @ViewChild('container')
     private containerRef: ElementRef;
     
-    constructor(private $datGui: DatGuiService) {
-        this.$datGui.controllers.subscribe((param: GuiParameters) => {
+    constructor(private $cameraService: CameraService) {
+        this.$cameraService.controllers.subscribe((param: GuiParameters) => {
             if (this.figure && (this.figure as Points).type == "Points") {
                 (<PointsMaterial>(this.figure as Points).material).setValues({
                     size: param.size,
@@ -54,6 +54,9 @@ export class CameraNativeComponent implements OnChanges {
                 });
             }
         })
+        this.$cameraService.background.subscribe(colour => {
+            this.scene.background = colour;
+        });
     }
 
     ngOnChanges() {
@@ -95,7 +98,6 @@ export class CameraNativeComponent implements OnChanges {
         if (!data || !data[0]) {
             return;
         }
-        this.initScene(data);
         let cameraParams: CameraParams = this.getCameraParams(data);
         if (!this.camera) {
             this.camera = PointCloudLoader.buildCamera(this.canvas, cameraParams);    
@@ -108,6 +110,7 @@ export class CameraNativeComponent implements OnChanges {
             this.controls.target.set(cameraParams.look_x, cameraParams.look_y, cameraParams.look_z);
             this.controls.update();
         }
+        this.initScene(data);
         this.controls.addEventListener('change', this.onControlChangeEvent);
         window.addEventListener('resize', this.onWindowResizeEvent, false)
         this.animate(this.scene, this.camera);
@@ -145,17 +148,17 @@ export class CameraNativeComponent implements OnChanges {
         if (typeof data[0][0] == 'number') {
             let geometry = PointCloudLoader.getPointsGeometry((data as number[][]));
             let figure = PointCloudLoader.loadPoints(geometry, {
-                size: this.$datGui.getParameters.size,
+                size: this.$cameraService.getParameters.size,
                 vertexColors: THREE.VertexColors,
                 transparent: true,
-                opacity: this.$datGui.getParameters.opacity
+                opacity: this.$cameraService.getParameters.opacity
             });
             this.figure = figure;
             this.scene.add(figure);
         } else if (typeof data[0][0][0] == 'number') {
             let meshes = VoxelGridLoader.getVoxelMeshes((data as number[][][]), {
-                opacity: this.$datGui.getParameters.opacity,
-                wireframe: this.$datGui.getParameters.wireframe
+                opacity: this.$cameraService.getParameters.opacity,
+                wireframe: this.$cameraService.getParameters.wireframe
             });
             this.figure = meshes;
             meshes.forEach(mesh => {
@@ -167,13 +170,12 @@ export class CameraNativeComponent implements OnChanges {
     }
 
     private initControl(cameraSettings: CameraParams, camera: THREE.PerspectiveCamera): THREE.OrbitControls {
-        
+
         let controls: THREE.OrbitControls = new THREE.OrbitControls(camera, this.renderer.domElement);
         controls.target.copy(new THREE.Vector3(
             cameraSettings.look_x, 
             cameraSettings.look_y, 
             cameraSettings.look_z));
-
         return controls;
     }
 
@@ -197,6 +199,7 @@ export class CameraNativeComponent implements OnChanges {
         scene.add(light);
 
         this.render(scene, camera);
+        this.controls.update();
     }
 
     private render(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {

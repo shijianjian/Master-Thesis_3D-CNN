@@ -2,10 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { PointCloudFile } from '../../common/pointcloudUploader/model/FileModel';
-import { DatGuiService } from '../../common/camera/dat-gui.service';
+import { CameraService } from '../../common/camera/camera.service';
 import { PointCloudLoader, VoxelGridLoader } from '../../common/camera/util/pointcloud-loader';
 import { PredictionService } from '../prediction.service';
-
 
 @Component({
   selector: 'app-prediction-nav',
@@ -20,7 +19,7 @@ export class PredictionNavComponent {
 
     constructor(
         private $predictionService: PredictionService,
-        private $datGui: DatGuiService
+        private $cameraService: CameraService
     ) {}
 
     onMenu() {
@@ -30,12 +29,12 @@ export class PredictionNavComponent {
     onUploaded(e: PointCloudFile) {
         this.$predictionService.pointcloud.next(e.points);
         this.points = e.points;
-        this.$datGui.openGui();
+        this.$cameraService.openGui();
     }
 
     onReload() {
         this.$predictionService.pointcloud.next(Array.from(this.points));
-        this.$datGui.setControlParams({
+        this.$cameraService.setControlParams({
             size: PointCloudLoader.DefaultPointsParams.size,
             opacity: PointCloudLoader.DefaultPointsParams.opacity,
             wireframe: VoxelGridLoader.DefaultVoxelParams.wireframe

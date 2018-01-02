@@ -3,7 +3,7 @@ import { MatSelectChange } from "@angular/material";
 
 import { PointCloudCalculations } from "../../common/camera/util/pointcloud-loader";
 import { LaboratoryService } from "../laboratory.service";
-import { ConvSettings } from "./model/conv-settings";
+import { ConvSettings } from "./model/operation-settings";
 
 
 @Component({
@@ -13,6 +13,7 @@ import { ConvSettings } from "./model/conv-settings";
 export class ConvolutionPanelComponent {
 
     @Output() settings = new EventEmitter<ConvSettings>();
+    @Output() activate = new EventEmitter<string>();
 
     convChoice = 1;
     paddingStrategy = ['Same', 'Valid'];

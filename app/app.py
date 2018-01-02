@@ -15,7 +15,7 @@ from cnn.util.cluster import dbscan_labels, mean_shift_labels, k_means_label, fi
 from cnn.util.process_pointcloud import norm_point, voxelize3D
 from cnn.prediction import predict
 from cnn.training.data_process import get_folder_structure, data_reshape, data_shuffling, data_onehot_encode, find_data
-from cnn.training.nn import conv_3d
+from cnn.training.nn import conv_3d, max_pooling_3d
 from cnn.training.cnn import set_placeholders, get_measurement, train_neural_network
 
 
@@ -95,6 +95,13 @@ def cluster_point_cloud():
             n_clusters = int(request.form['n_clusters'])
             init = request.form['init']
             precompute_distances = request.form['precompute_distances']
+            if precompute_distances is not 'auto':
+                if precompute_distances == 'true':
+                    precompute_distances = True
+                elif precompute_distances == 'false':
+                    precompute_distances = False
+                else:
+                    raise TypeError("precompute_distances is not auto or True/False, it is " + precompute_distances)
             algorithm = request.form['algorithm']
             max_iter = int(request.form['max_iter'])
             labels = k_means_label(normalized_cloud, n_clusters=n_clusters, init=init,
@@ -255,6 +262,34 @@ def conv():
             print('Error on recieving data')
             print(e)
         res = conv_3d(np.asarray(voxel), np.asarray(kernel), (stride, stride, stride), padding.upper())
+        return APP.response_class(
+            response=json.dumps(res.tolist()),
+            status=200,
+            mimetype='application/json'
+        )
+
+@APP.route('/lab/pool', methods=['POST'])
+@cross_origin()
+def pool():
+    if request.method == 'POST':
+        import ast
+        voxel = None
+        kernel_size = None
+        stride = None
+        padding = None
+        try:
+            # convert string to proper format
+            voxel = request.form['voxel']
+            kernel_size = request.form['kernel_size']
+            stride = int(request.form['stride'])
+            padding = request.form['padding']
+            voxel = ast.literal_eval(voxel)
+            kernel_size = ast.literal_eval(kernel_size)
+        except Exception as e:
+            print('Error on recieving data')
+            print(e)
+
+        res = max_pooling_3d(np.asarray(voxel), kernel_size, (stride, stride, stride), padding.upper())
         return APP.response_class(
             response=json.dumps(res.tolist()),
             status=200,

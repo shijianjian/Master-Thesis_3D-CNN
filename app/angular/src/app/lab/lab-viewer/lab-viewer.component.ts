@@ -24,4 +24,8 @@ export class LabViewerComponent implements OnInit {
   ngOnInit() {
   }
 
+  onLaunch(seg: number[][][]) {
+    this.$laboratoryService.voxelgrid.next(seg);
+    this.$laboratoryService.outputgrid.next(undefined);
+  }
 }

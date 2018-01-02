@@ -7,7 +7,7 @@ import numpy as np
 
 def conv_3d(data, kernel, stride=(1,1,1), padding='SAME'):
     
-    padded_target = do_padding(data, kernel, stride, padding)
+    padded_target = do_padding(data, kernel.shape, stride, padding)
     
     outsize_x = int((padded_target.shape[0] - kernel.shape[0])/stride[0] + 1)
     outsize_y = int((padded_target.shape[1] - kernel.shape[1])/stride[1] + 1)
@@ -27,13 +27,33 @@ def conv_3d(data, kernel, stride=(1,1,1), padding='SAME'):
     return output
 
 
-def do_padding(target, kernel, stride, padding='SAME'):
+def max_pooling_3d(target, pool_size, stride, padding="valid"):
+    
+    padded_target = do_padding(target, pool_size, stride, padding)
+    
+    outsize_x = int((padded_target.shape[0] - pool_size[0])/stride[0] + 1)
+    outsize_y = int((padded_target.shape[1] - pool_size[1])/stride[1] + 1)
+    outsize_z = int((padded_target.shape[2] - pool_size[2])/stride[2] + 1)
+    output = np.zeros((outsize_x, outsize_y, outsize_z))
+    
+    for i in range(outsize_x):
+        for j in range(outsize_y):
+            for k in range(outsize_z):
+                i_start = i*stride[0]
+                j_start = j*stride[1]
+                k_start = k*stride[2]
+
+                output[i, j, k] = np.max(target[i_start:i_start+2, j_start:j_start+2, k_start:k_start+2])
+                    
+    return output
+
+def do_padding(target, kernel_size, stride, padding='SAME'):
     # Algorithm comes from https://github.com/tensorflow/tensorflow/commit/a276e0999ab4223ac36d75221028d3e8835c60ae
     print(padding, padding == 'SAME')
     if padding == 'SAME':
-        pad_left, pad_right = same_padding(target.shape[0], kernel.shape[0], stride[0])
-        pad_top, pad_bottom = same_padding(target.shape[1], kernel.shape[1], stride[1])
-        pad_front, pad_back = same_padding(target.shape[2], kernel.shape[2], stride[2])
+        pad_left, pad_right = same_padding(target.shape[0], kernel_size[0], stride[0])
+        pad_top, pad_bottom = same_padding(target.shape[1], kernel_size[1], stride[1])
+        pad_front, pad_back = same_padding(target.shape[2], kernel_size[2], stride[2])
         if len(target.shape) == 3:
             padded_target = np.pad(target, [(pad_left, pad_right), (pad_top, pad_bottom), (pad_front, pad_back)], mode='constant')
         elif len(target.shape) == 4:
@@ -43,9 +63,9 @@ def do_padding(target, kernel, stride, padding='SAME'):
         
     elif padding == 'VALID':
         # no padding would be used
-        border_x = valid_padding(target.shape[0], kernel.shape[0], stride[0])
-        border_y = valid_padding(target.shape[1], kernel.shape[1], stride[1])
-        border_z = valid_padding(target.shape[2], kernel.shape[2], stride[2])
+        border_x = valid_padding(target.shape[0], kernel_size[0], stride[0])
+        border_y = valid_padding(target.shape[1], kernel_size[1], stride[1])
+        border_z = valid_padding(target.shape[2], kernel_size[2], stride[2])
         if len(target.shape) == 3:
             padded_target = target[:border_x, :border_y, :border_z]
         elif len(target.shape) == 4:

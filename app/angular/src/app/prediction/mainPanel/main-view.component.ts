@@ -6,7 +6,7 @@ import { CameraNativeComponent } from '../../common/camera/camera-native.compone
 import { CanvasSettings } from '../../common/camera/model/visual-settings';
 import { PointCloudPostProcess } from '../../common/camera/util/pointcloud-post-process';
 import { DataPanelComponent } from './data-panel.component';
-import { DatGuiService } from '../../common/camera/dat-gui.service';
+import { CameraService } from '../../common/camera/camera.service';
 import { PredictionService } from '../prediction.service';
 
 @Component({
@@ -47,7 +47,7 @@ export class MainViewComponent implements OnInit, OnChanges {
 
     constructor(
         private $predictionService: PredictionService,
-        private $datGui: DatGuiService
+        private $cameraService: CameraService
     ) {}
 
     ngOnInit() {
@@ -70,7 +70,7 @@ export class MainViewComponent implements OnInit, OnChanges {
 
     onReset() {
         this.onOutputPoints(Array.from(this.origPoints));
-        this.$datGui.setControlParams({
+        this.$cameraService.setControlParams({
             size: PointCloudLoader.DefaultPointsParams.size,
             opacity: PointCloudLoader.DefaultPointsParams.opacity,
             wireframe: VoxelGridLoader.DefaultVoxelParams.wireframe

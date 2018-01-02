@@ -1,0 +1,14 @@
+<div>
+    <mat-form-field>
+        <mat-select placeholder="Activation Functions" (selectionChange)="onSelected($event)">
+            <mat-option *ngFor="let act of activationFunctions" [value]="act">
+            {{ act }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button
+        style="margin-top: 10px; float:right" 
+        mat-raised-button 
+        (click)="onActivate()" color="primary">Activate</button>
+</div>

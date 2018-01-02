@@ -4,6 +4,7 @@ import { Response, Http } from "@angular/http";
 
 import { MainService } from "../main.service";
 import { baseUrl } from "../settings";
+import { PointCloudCalculations } from "../common/camera/util/pointcloud-loader";
 
 @Injectable()
 export class LaboratoryService {
@@ -29,6 +30,16 @@ export class LaboratoryService {
         body.append('padding', padding);
 
         return this._http.post(`${baseUrl}/lab/conv`, body);
+    }
+
+    pool3d(voxel: number[][][], kernel_size: PointCloudCalculations.GridSize, stride: number, padding: string) {
+        let body = new FormData();
+        body.append('voxel', JSON.stringify(voxel));
+        body.append('kernel_size', JSON.stringify([kernel_size.X, kernel_size.Y, kernel_size.Z]));
+        body.append('stride', stride.toString());
+        body.append('padding', padding);
+
+        return this._http.post(`${baseUrl}/lab/pool`, body);
     }
 
 }
