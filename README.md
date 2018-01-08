@@ -30,6 +30,18 @@ Tensorflow-GPU version requires Nvidia GPU which supports CUDA. You can find the
 
 After Installation, you can try running [this script](https://gist.github.com/mrry/ee5dbcfdd045fa48a27d56664411d41c) to verify you got all dependencies on your <b>Windows machine</b>. You may find it under '/tools/tensorflow-self-check.py'.
 
+### Usage
+Home Page
+![Home Page](./img/Picture1.png)
+Training 
+![Home Page](./img/Picture2.png)
+Segmentation
+![Home Page](./img/Picture3.png)
+Prediction 
+![Home Page](./img/Picture4.png)
+Layer Extraction 
+![Home Page](./img/Picture5.png)
+
 #### How to run
 ##### For running the app:
 Before running:
