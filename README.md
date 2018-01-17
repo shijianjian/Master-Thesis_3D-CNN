@@ -1,8 +1,12 @@
-# 3D-CNN
+# Master Project of 3D-CNN
+
+This is the master project built for recognizing objects within point clouds.
 
 Point cloud data classification built with Tensorflow.
 
 This project contains two parts which is concept and application respectively. While the concept contains all the trail python scripts along with many Jupyter Notebooks, the application is built with Angular and Python Flask.
+
+Thesis is under /doc folder
 
 ## Web app for CNN model
 
