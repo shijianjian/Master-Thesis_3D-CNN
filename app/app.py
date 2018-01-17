@@ -95,7 +95,7 @@ def cluster_point_cloud():
             n_clusters = int(request.form['n_clusters'])
             init = request.form['init']
             precompute_distances = request.form['precompute_distances']
-            if precompute_distances is not 'auto':
+            if precompute_distances != 'auto':
                 if precompute_distances == 'true':
                     precompute_distances = True
                 elif precompute_distances == 'false':
