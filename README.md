@@ -37,19 +37,24 @@ After Installation, you can try running [this script](https://gist.github.com/mr
 ### Usage
 - Home Page
 
-![Home Page](./img/Picture1.png)
+<img src="./img/Picture1.png" width="80%">
+
 - Training 
 
-![Home Page](./img/Picture2.png)
+<img src="./img/Picture2.png" width="80%">
+
 - Segmentation
 
-![Home Page](./img/Picture3.png)
+<img src="./img/Picture3.png" width="80%">
+
 - Prediction 
 
-![Home Page](./img/Picture4.png)
+<img src="./img/Picture4.png" width="80%">
+
 - Layer Extraction 
 
-![Home Page](./img/Picture5.png)
+<img src="./img/Picture5.png" width="80%">
+
 
 #### How to run
 ##### For running the app:
